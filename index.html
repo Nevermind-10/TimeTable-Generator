@@ -130,7 +130,7 @@
 </select>
 
   
-
+  <button id="addScheduleBtn">Add Schedule Request</button>
   <button id="generateBtn">Generate Timetable</button>
 
   <div id="timetableOutput"></div>
@@ -207,6 +207,131 @@
       const date = dates[i % dates.length];
       timetableText += `Teacher: ${teacher}, Subject: ${subject}, Class: ${cls}, Date: ${date}\n`;
     }
+    <script>
+  // Store schedule requests
+  const scheduleRequests = []; 
+
+  // Modified functions to add requests with teacher, subject, class, date, timeSlot
+  function addSchedule() {
+    const teacher = document.getElementById('teacherName').value.trim();
+    const subject = document.getElementById('subjectDropdown').value;
+    const cls = document.getElementById('classDropdown').value;
+    const date = document.getElementById('datePicker').value;
+    const timeSlot = document.getElementById('timeSlot').value;
+
+    if (!teacher || !subject || !cls || !date || !timeSlot) {
+      alert('Please fill all fields including time slot.');
+      return;
+    }
+
+    // Add the request
+    scheduleRequests.push({ teacher, subject, class: cls, date, timeSlot});
+    renderScheduleRequests();
+  }
+
+  // Render list of requests (optional)
+  function renderScheduleRequests() {
+    const ul = document.getElementById('scheduleList') || document.createElement('ul');
+    ul.id = 'scheduleList';
+    ul.innerHTML = '';
+    scheduleRequests.forEach((req, i) => {
+      const li = document.createElement('li');
+      li.textContent = `${req.teacher} - ${req.subject} - ${req.class} - ${req.date} - ${req.timeSlot}`;
+      ul.appendChild(li);
+    });
+    if(!document.getElementById('scheduleList')) {
+      document.querySelector('.container').insertBefore(ul, document.getElementById('generateBtn'));
+    }
+  }
+
+  // CSP Solver to assign schedules avoiding conflicts
+  function generateTimetable() {
+    const output = document.getElementById('timetableOutput');
+    output.textContent = '';
+
+    if (scheduleRequests.length === 0) {
+      output.textContent = 'No schedule requests to assign.';
+      return;
+    }
+
+    // Assignment object: key is teacher, value is array of assigned slots {class, date, timeSlot}
+    const assignment = {};
+
+    // Track conflicts: no teacher or class should clash at the same date & time
+    function isValid(teacher, cls, date, timeSlot) {
+      // Check teacher's own assignments
+      if(assignment[teacher]) {
+        for(let slot of assignment[teacher]) {
+          if(slot.date === date && slot.timeSlot === timeSlot) {
+            // Teacher busy at this slot
+            return false;
+          }
+        }
+      }
+      // Check no other teacher assigned same class at same slot
+      for(let t in assignment) {
+        if(t !== teacher) {
+          for(let slot of assignment[t]) {
+            if(slot.class === cls && slot.date === date && slot.timeSlot === timeSlot) {
+              return false; // class already occupied
+            }
+          }
+        }
+      }
+      return true;
+    }
+
+    // Backtracking function
+    function backtrack(index) {
+      if (index === scheduleRequests.length) {
+        return true; // assigned all requests
+      }
+
+      let req = scheduleRequests[index];
+      if (!assignment[req.teacher]) assignment[req.teacher] = [];
+
+      if (isValid(req.teacher, req.class, req.date, req.timeSlot)) {
+        assignment[req.teacher].push({
+          class: req.class, 
+          date: req.date,
+          timeSlot: req.timeSlot,
+          subject: req.subject
+        });
+
+        if (backtrack(index + 1)) return true;
+
+        // Backtrack
+        assignment[req.teacher].pop();
+      }
+
+      return false;
+    }
+
+    let success = backtrack(0);
+
+    if(!success) {
+      output.textContent = "No valid timetable possible with current requests due to conflicts.";
+      return;
+    }
+
+    // Display results
+    let resultText = '';
+    for(const [teacher, slots] of Object.entries(assignment)) {
+      slots.forEach(slot => {
+        resultText += `Teacher: ${teacher}, Subject: ${slot.subject}, Class: ${slot.class}, Date: ${slot.date}, Time Slot: ${slot.timeSlot}\n`;
+      });
+    }
+    output.textContent = resultText;
+  }
+
+  // Hook addSchedule to button click (add a separate button for adding schedule requests)
+  document.getElementById('addScheduleBtn').addEventListener('click', addSchedule);
+
+  // Hook generateTimetable to generate button click
+  document.getElementById('generateBtn').addEventListener('click', generateTimetable);
+
+</script>
+
     
 
     output.textContent = timetableText;
