@@ -6,6 +6,7 @@
 <title>Automated Timetable Generator</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet" />
 <style>
+  /* Styling same as before, omitted here for brevity */
   body {
     font-family: 'Montserrat', sans-serif;
     background: #f0f0f0;
@@ -21,85 +22,39 @@
     box-shadow: 0 12px 30px rgba(0,0,0,0.1);
     width: 400px;
   }
-  h1 {
-    text-align: center;
-    margin-bottom: 30px;
-    font-weight: 600;
-    color: #333;
-  }
-  label {
-    display: block;
-    margin-top: 15px;
-    font-weight: 600;
-    font-size: 14px;
-    color: #444;
-  }
+  h1 {text-align: center; margin-bottom: 30px; font-weight: 600; color: #333;}
+  label {display: block; margin-top: 15px; font-weight: 600; font-size: 14px; color: #444;}
   input[type="text"], input[type="date"], select {
-    width: 100%;
-    padding: 10px 12px;
-    margin-top: 5px;
-    border: 1.8px solid #ccc;
-    border-radius: 8px;
-    font-size: 16px;
-    box-sizing: border-box;
+    width: 100%; padding: 10px 12px; margin-top: 5px; border: 1.8px solid #ccc;
+    border-radius: 8px; font-size: 16px; box-sizing: border-box;
   }
-  select[multiple] {
-    height: 130px;
-  }
+  select[multiple] { height: 130px; }
   button {
-    margin-top: 15px;
-    width: 100%;
-    padding: 12px 0;
-    background: #5151e5;
-    border: none;
-    border-radius: 8px;
-    color: white;
-    font-weight: 700;
-    font-size: 16px;
-    cursor: pointer;
+    margin-top: 15px; width: 100%; padding: 12px 0; background: #5151e5; border: none;
+    border-radius: 8px; color: white; font-weight: 700; font-size: 16px; cursor: pointer;
     transition: background-color 0.3s ease;
   }
-  button:hover {
-    background: #3b3bda;
-  }
+  button:hover { background: #3b3bda; }
   ul {
-    margin-top: 8px;
-    padding-left: 20px;
-    max-height: 140px;
-    overflow-y: auto;
-    border: 1px solid #eee;
-    border-radius: 8px;
-    background: #f9f9f9;
+    margin-top: 8px; padding-left: 20px; max-height: 140px; overflow-y: auto;
+    border: 1px solid #eee; border-radius: 8px; background: #f9f9f9;
   }
   li {
-    font-size: 14px;
-    padding: 6px 8px;
-    border-bottom: 1px solid #ddd;
+    font-size: 14px; padding: 6px 8px; border-bottom: 1px solid #ddd;
   }
   #teacherProfiles {
     margin-top: 20px;
   }
   .teacher-profile {
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    padding: 10px;
-    margin-bottom: 8px;
-    cursor: pointer;
-    background: #f5f5f5;
+    border: 1px solid #ccc; border-radius: 10px; padding: 10px; margin-bottom: 8px;
+    cursor: pointer; background: #f5f5f5;
   }
   .teacher-details {
-    margin-top: 10px;
-    font-size: 14px;
+    margin-top: 10px; font-size: 14px;
   }
   #timetableOutput {
-    margin-top: 25px;
-    font-family: monospace;
-    background: #f4f4f4;
-    padding: 15px;
-    border-radius: 8px;
-    white-space: pre-wrap;
-    max-height: 250px;
-    overflow-y: auto;
+    margin-top: 25px; font-family: monospace; background: #f4f4f4; padding: 15px;
+    border-radius: 8px; white-space: pre-wrap; max-height: 250px; overflow-y: auto;
     border: 1px solid #ddd;
   }
 </style>
@@ -152,10 +107,9 @@
 </div>
 
 <script>
-  // Global teachers data keyed by teacher's full name
+  // Teacher profiles keyed by full name
   const teachersData = {};
 
-  // Add or update a teacher profile
   function addOrUpdateTeacherProfile() {
     const teacherNameInput = document.getElementById('teacherNameInput');
     const teacherName = teacherNameInput.value.trim();
@@ -185,7 +139,6 @@
       return;
     }
 
-    // Create profile if new
     if (!teachersData[teacherName]) {
       teachersData[teacherName] = {
         subjects: new Set(),
@@ -195,13 +148,12 @@
       };
     }
 
-    // Add/update data in sets for uniqueness
+    // Add the data to Sets to avoid duplicates
     teachersData[teacherName].subjects.add(subject);
     teachersData[teacherName].classes.add(cls);
     teachersData[teacherName].dates.add(date);
     selectedTimeSlots.forEach(slot => teachersData[teacherName].availableTimeSlots.add(slot));
 
-    // Clear inputs after update
     teacherNameInput.value = '';
     document.getElementById('subjectDropdown').selectedIndex = 0;
     document.getElementById('classDropdown').selectedIndex = 0;
@@ -211,109 +163,86 @@
     renderTeacherProfiles();
   }
 
-  // Render clickable teacher profiles
   function renderTeacherProfiles() {
     const container = document.getElementById('teacherProfiles');
     container.innerHTML = '<h2>Teacher Profiles</h2>';
 
     Object.entries(teachersData).forEach(([teacher, data]) => {
-      const profileDiv = document.createElement('div');
-      profileDiv.className = 'teacher-profile';
-      profileDiv.innerHTML = `<b>${teacher}</b><button style="float:right;" onclick="toggleDetails('${teacher}')">Show/Hide Details</button>`;
+      const div = document.createElement('div');
+      div.className = 'teacher-profile';
+      div.innerHTML = `<strong>${teacher}</strong> <button style="float:right;" onclick="toggleDetails('${teacher}')">Show/Hide</button>`;
 
-      const detailsDiv = document.createElement('div');
-      detailsDiv.className = 'teacher-details';
-      detailsDiv.id = `details-${teacher}`;
-      detailsDiv.style.display = 'none';
-      detailsDiv.innerHTML = `
+      const details = document.createElement('div');
+      details.id = `details-${teacher}`;
+      details.className = 'teacher-details';
+      details.style.display = 'none';
+      details.innerHTML = `
         <p><b>Subjects:</b> ${Array.from(data.subjects).join(', ')}</p>
         <p><b>Classes:</b> ${Array.from(data.classes).join(', ')}</p>
         <p><b>Dates:</b> ${Array.from(data.dates).join(', ')}</p>
         <p><b>Available Time Slots:</b> ${Array.from(data.availableTimeSlots).join(', ')}</p>
       `;
 
-      profileDiv.appendChild(detailsDiv);
-      container.appendChild(profileDiv);
+      div.appendChild(details);
+      container.appendChild(div);
     });
   }
 
-  // Toggle details visibility
   function toggleDetails(teacherName) {
-    const details = document.getElementById(`details-${teacherName}`);
-    if(details.style.display === 'none') {
-      details.style.display = 'block';
-    } else {
-      details.style.display = 'none';
-    }
+    const detailsDiv = document.getElementById(`details-${teacherName}`);
+    detailsDiv.style.display = detailsDiv.style.display === 'none' ? 'block' : 'none';
   }
 
-  // Generate timetable: assign subjects/classes/dates/time slots to teachers without conflicts
   function generateTimetable() {
     const output = document.getElementById('timetableOutput');
-    output.textContent = ''; 
+    output.textContent = '';
 
     const teacherNames = Object.keys(teachersData);
     if (teacherNames.length === 0) {
-      output.textContent = 'No teacher profiles available. Please add teachers first.';
+      output.textContent = 'No teacher profiles available.';
       return;
     }
 
-    // Flatten schedule requests for CSP
-    const scheduleRequests = [];
-    teacherNames.forEach(teacher => {
+    // Construct array of unique teaching requests per teacher, subject, class, date
+    const requests = [];
+    for (const teacher of teacherNames) {
       const profile = teachersData[teacher];
-      // Generate all combinations of subjects, classes, dates and available time slots
-      profile.subjects.forEach(subject => {
-        profile.classes.forEach(cls => {
-          profile.dates.forEach(date => {
-            profile.availableTimeSlots.forEach(timeSlot => {
-              scheduleRequests.push({teacher, subject, class: cls, date, timeSlot});
-            });
-          });
-        });
-      });
-    });
-
-    // Using backtracking to assign one non-conflicting time slot per teacher per subject/class/date
-    // We'll try to assign one timeslot to each unique (teacher, subject, class, date) combination from their available slots
-    
-    // First, group by (teacher, subject, class, date) keys to unique requests
-    const uniqueRequests = [];
-    const seenKeys = new Set();
-    for (const req of scheduleRequests) {
-      const key = `${req.teacher}|${req.subject}|${req.class}|${req.date}`;
-      if (!seenKeys.has(key)) {
-        uniqueRequests.push(req);
-        seenKeys.add(key);
+      for (const subject of profile.subjects) {
+        for (const cls of profile.classes) {
+          for (const date of profile.dates) {
+            requests.push({teacher, subject, class: cls, date});
+          }
+        }
       }
     }
 
-    // We'll assign time slots from availableTimeSlots of each teacher ensuring no conflict
+    // Assign time slots from availableTimeSlots per teacher for requests using backtracking to avoid conflicts
     const assignment = {};
 
     function isValid(teacher, cls, date, timeSlot) {
+      // Teacher does not have overlapping class at this date/time
       if (assignment[teacher]) {
         for (const slot of assignment[teacher]) {
-          if (slot.date === date && slot.timeSlot === timeSlot) return false; // teacher busy
+          if (slot.date === date && slot.timeSlot === timeSlot) return false;
         }
       }
+      // No other teacher is assigned same class/date/timeSlot
       for (const t in assignment) {
         if (t !== teacher) {
           for (const slot of assignment[t]) {
-            if (slot.class === cls && slot.date === date && slot.timeSlot === timeSlot) return false; // class slot clash
+            if (slot.class === cls && slot.date === date && slot.timeSlot === timeSlot) return false;
           }
         }
       }
       return true;
     }
 
-    function backtrack(index) {
-      if (index === uniqueRequests.length) return true;
+    function backtrack(i) {
+      if (i === requests.length) return true;
 
-      const req = uniqueRequests[index];
+      const req = requests[i];
       if (!assignment[req.teacher]) assignment[req.teacher] = [];
 
-      // Try all teacher's available time slots for this request
       for (const ts of Array.from(teachersData[req.teacher].availableTimeSlots)) {
         if (isValid(req.teacher, req.class, req.date, ts)) {
           assignment[req.teacher].push({
@@ -322,36 +251,35 @@
             timeSlot: ts,
             subject: req.subject
           });
-          if (backtrack(index + 1)) return true;
+
+          if (backtrack(i+1)) return true;
+
           assignment[req.teacher].pop();
         }
       }
       return false;
     }
 
-    const success = backtrack(0);
-
-    if (!success) {
-      output.textContent = 'No valid timetable possible with current teacher availabilities and assignments.';
+    if (!backtrack(0)) {
+      output.textContent = 'No valid timetable possible with current profiles and constraints.';
       return;
     }
 
-    // Display timetable results nicely
-    let result = 'Generated Timetable:\n\n';
+    // Format timetable output
+    let timetableResult = 'Generated Timetable:\n\n';
     for (const [teacher, slots] of Object.entries(assignment)) {
-      result += `${teacher}:\n`;
-      slots.forEach(slot => {
-        result += `  Subject: ${slot.subject}, Class: ${slot.class}, Date: ${slot.date}, Time: ${slot.timeSlot}\n`;
-      });
-      result += '\n';
+      timetableResult += `${teacher}:\n`;
+      for (const slot of slots) {
+        timetableResult += `  Subject: ${slot.subject}, Class: ${slot.class}, Date: ${slot.date}, Time: ${slot.timeSlot}\n`;
+      }
+      timetableResult += '\n';
     }
-    output.textContent = result;
+
+    output.textContent = timetableResult;
   }
 
-  // Attach event listeners
   document.getElementById('addOrUpdateTeacherBtn').addEventListener('click', addOrUpdateTeacherProfile);
   document.getElementById('generateBtn').addEventListener('click', generateTimetable);
-
 </script>
 </body>
 </html>
