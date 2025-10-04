@@ -95,20 +95,41 @@
   <button onclick="addTeacher()">Add Teacher</button>
   <ul id="teachersList"></ul>
 
-  <label for="subjectName">Subject Name</label>
-  <input type="text" id="subjectName" placeholder="Enter subject name" />
-  <button onclick="addSubject()">Add Subject</button>
-  <ul id="subjectsList"></ul>
+  <label for="subjectDropdown">Subject</label>
+<select id="subjectDropdown">
+  <option value="">-- Select Subject --</option>
+  <option value="Linear Algebra">Linear Algebra</option>
+  <option value="Fluid Mechanics">Fluid Mechanics</option>
+  <option value="Programming in C">Programming in C</option>
+  <option value="Signal Processing">Signal Processing</option>
+  <option value="Life skills">Life skills</option>
+</select>
 
-  <label for="className">Class Name</label>
-  <input type="text" id="className" placeholder="Enter class name" />
-  <button onclick="addClass()">Add Class</button>
-  <ul id="classesList"></ul>
+<label for="classDropdown">Class</label>
+<select id="classDropdown">
+  <option value="">-- Select Class --</option>
+  <option value="Computer Science Engineering">Computer Science Engineering</option>
+  <option value="Mechanical Engineering">Mechanical Engineering</option>
+  <option value="Electrical and Electronics Engineering">Electrical and Electronics Engineering</option>
+</select>
+
 
   <label for="datePicker">Date</label>
   <input type="date" id="datePicker" />
   <button onclick="selectDate()">Add Date</button>
   <ul id="datesList"></ul>
+  <label for="timeSlot">Time Slot</label>
+<select id="timeSlot">
+  <option value="">-- Select Time Slot --</option>
+  <option value="09:00-10:00">09:00-10:00</option>
+  <option value="10:00-11:00">10:00-11:00</option>
+  <option value="11:00-12:00">11:00-12:00</option>
+  <option value="12:00-13:00">12:00-13:00</option>
+  <option value="13:00-14:00">13:00-14:00</option>
+  <option value="14:00-15:00">14:00-15:00</option>
+</select>
+
+  
 
   <button id="generateBtn">Generate Timetable</button>
 
@@ -131,7 +152,7 @@
     }
   }
   function addSubject() {
-    const input = document.getElementById('subjectName');
+    const input = document.getElementById('subjectDropdown');
     const val = input.value.trim();
     if(val && !subjects.includes(val)) {
       subjects.push(val);
@@ -140,7 +161,7 @@
     }
   }
   function addClass() {
-    const input = document.getElementById('className');
+    const input = document.getElementById('classDropdown');
     const val = input.value.trim();
     if(val && !classes.includes(val)) {
       classes.push(val);
