@@ -19,7 +19,7 @@
     padding: 30px 40px;
     border-radius: 12px;
     box-shadow: 0 12px 30px rgba(0,0,0,0.1);
-    width: 360px;
+    width: 400px;
   }
   h1 {
     text-align: center;
@@ -47,7 +47,7 @@
     height: 130px;
   }
   button {
-    margin-top: 20px;
+    margin-top: 15px;
     width: 100%;
     padding: 12px 0;
     background: #5151e5;
@@ -63,9 +63,9 @@
     background: #3b3bda;
   }
   ul {
-    margin-top: 10px;
+    margin-top: 8px;
     padding-left: 20px;
-    max-height: 120px;
+    max-height: 140px;
     overflow-y: auto;
     border: 1px solid #eee;
     border-radius: 8px;
@@ -76,6 +76,21 @@
     padding: 6px 8px;
     border-bottom: 1px solid #ddd;
   }
+  #teacherProfiles {
+    margin-top: 20px;
+  }
+  .teacher-profile {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    background: #f5f5f5;
+  }
+  .teacher-details {
+    margin-top: 10px;
+    font-size: 14px;
+  }
   #timetableOutput {
     margin-top: 25px;
     font-family: monospace;
@@ -83,7 +98,7 @@
     padding: 15px;
     border-radius: 8px;
     white-space: pre-wrap;
-    max-height: 200px;
+    max-height: 250px;
     overflow-y: auto;
     border: 1px solid #ddd;
   }
@@ -93,10 +108,8 @@
 <div class="container">
   <h1>Automated Timetable Generator</h1>
 
-  <label for="teacherName">Teacher Name</label>
-  <input type="text" id="teacherName" placeholder="Enter teacher name" />
-  <button onclick="addTeacher()">Add Teacher</button>
-  <ul id="teachersList"></ul>
+  <label for="teacherNameInput">Teacher Name</label>
+  <input type="text" id="teacherNameInput" placeholder="Enter teacher full name" />
 
   <label for="subjectDropdown">Subject</label>
   <select id="subjectDropdown">
@@ -118,11 +131,9 @@
 
   <label for="datePicker">Date</label>
   <input type="date" id="datePicker" />
-  <button onclick="selectDate()">Add Date</button>
-  <ul id="datesList"></ul>
 
-  <label for="timeSlot">Available Time Slots (select multiple)</label>
-  <select id="timeSlot" multiple>
+  <label for="availableTimeSlots">Available Time Slots (select multiple)</label>
+  <select id="availableTimeSlots" multiple>
     <option value="09:00-10:00">09:00-10:00</option>
     <option value="10:00-11:00">10:00-11:00</option>
     <option value="11:00-12:00">11:00-12:00</option>
@@ -130,167 +141,166 @@
     <option value="13:00-14:00">13:00-14:00</option>
     <option value="14:00-15:00">14:00-15:00</option>
   </select>
-  <button id="addTeacherAvailabilityBtn">Add Available Time Slots to Teacher</button>
 
-  <button id="addScheduleBtn">Add Schedule Request</button>
+  <button id="addOrUpdateTeacherBtn">Add/Update Teacher Profile</button>
+
+  <div id="teacherProfiles"></div>
+
   <button id="generateBtn">Generate Timetable</button>
-
-  <h3>Teacher Availabilities:</h3>
-  <ul id="teacherAvailabilityList" style="max-height: 120px; overflow-y:auto; border: 1px solid #eee; padding-left: 20px; border-radius: 8px; background: #f9f9f9;"></ul>
-
-  <h3>Schedule Requests:</h3>
-  <ul id="scheduleList" style="max-height: 120px; overflow-y:auto; border:1px solid #eee; padding-left: 20px; border-radius: 8px; background: #f9f9f9;"></ul>
 
   <div id="timetableOutput"></div>
 </div>
 
 <script>
-  const teachers = [];
-  const subjects = [];
-  const classes = [];
-  const dates = [];
-  const scheduleRequests = [];
+  // Global teachers data keyed by teacher's full name
+  const teachersData = {};
 
-  const teacherAvailability = {};
-
-  function addTeacher() {
-    const input = document.getElementById('teacherName');
-    const val = input.value.trim();
-    if(val && !teachers.includes(val)) {
-      teachers.push(val);
-      renderList('teachersList', teachers);
-      input.value = '';
-    }
-  }
-
-  function addSubject() {
-    const input = document.getElementById('subjectDropdown');
-    const val = input.value;
-    if(val && !subjects.includes(val)) {
-      subjects.push(val);
-      renderList('subjectsList', subjects);
-    }
-  }
-
-  function addClass() {
-    const input = document.getElementById('classDropdown');
-    const val = input.value;
-    if(val && !classes.includes(val)) {
-      classes.push(val);
-      renderList('classesList', classes);
-    }
-  }
-
-  function selectDate() {
-    const input = document.getElementById('datePicker');
-    const val = input.value;
-    if(val && !dates.includes(val)) {
-      dates.push(val);
-      renderList('datesList', dates);
-    }
-  }
-
-  function renderList(id, arr) {
-    const ul = document.getElementById(id);
-    ul.innerHTML = '';
-    for(let item of arr) {
-      const li = document.createElement('li');
-      li.textContent = item;
-      ul.appendChild(li);
-    }
-  }
-
-  function addTeacherAvailability() {
-    const teacher = document.getElementById('teacherName').value.trim();
-    const timeSlotSelect = document.getElementById('timeSlot');
-    const selectedSlots = Array.from(timeSlotSelect.selectedOptions).map(opt => opt.value);
-
-    if (!teacher) {
-      alert('Please enter teacher name');
-      return;
-    }
-    if (selectedSlots.length === 0) {
-      alert('Please select at least one time slot');
-      return;
-    }
-
-    if (!teacherAvailability[teacher]) {
-      teacherAvailability[teacher] = [];
-    }
-    selectedSlots.forEach(slot => {
-      if (!teacherAvailability[teacher].includes(slot)) {
-        teacherAvailability[teacher].push(slot);
-      }
-    });
-
-    renderTeacherAvailability();
-    timeSlotSelect.selectedIndex = -1; // clear selection
-  }
-
-  function renderTeacherAvailability() {
-    const ul = document.getElementById('teacherAvailabilityList');
-    ul.innerHTML = '';
-    for (const [teacher, slots] of Object.entries(teacherAvailability)) {
-      const li = document.createElement('li');
-      li.textContent = `${teacher}: ${slots.join(', ')}`;
-      ul.appendChild(li);
-    }
-  }
-
-  function addSchedule() {
-    const teacher = document.getElementById('teacherName').value.trim();
+  // Add or update a teacher profile
+  function addOrUpdateTeacherProfile() {
+    const teacherNameInput = document.getElementById('teacherNameInput');
+    const teacherName = teacherNameInput.value.trim();
     const subject = document.getElementById('subjectDropdown').value;
     const cls = document.getElementById('classDropdown').value;
     const date = document.getElementById('datePicker').value;
-    const timeSlot = document.getElementById('timeSlot').value;
+    const selectedTimeSlots = Array.from(document.getElementById('availableTimeSlots').selectedOptions).map(opt => opt.value);
 
-    if (!teacher || !subject || !cls || !date || !timeSlot) {
-      alert('Please fill all fields including time slot.');
+    if (!teacherName) {
+      alert('Please enter a valid teacher full name.');
+      return;
+    }
+    if (!subject) {
+      alert('Please select a subject.');
+      return;
+    }
+    if (!cls) {
+      alert('Please select a class.');
+      return;
+    }
+    if (!date) {
+      alert('Please select a date.');
+      return;
+    }
+    if (selectedTimeSlots.length === 0) {
+      alert('Please select at least one available time slot.');
       return;
     }
 
-    if (!teacherAvailability[teacher] || !teacherAvailability[teacher].includes(timeSlot)) {
-      alert(`${teacher} is not available at ${timeSlot}. Please add available time slots for the teacher first.`);
-      return;
+    // Create profile if new
+    if (!teachersData[teacherName]) {
+      teachersData[teacherName] = {
+        subjects: new Set(),
+        classes: new Set(),
+        dates: new Set(),
+        availableTimeSlots: new Set()
+      };
     }
 
-    scheduleRequests.push({ teacher, subject, class: cls, date, timeSlot });
-    renderScheduleRequests();
+    // Add/update data in sets for uniqueness
+    teachersData[teacherName].subjects.add(subject);
+    teachersData[teacherName].classes.add(cls);
+    teachersData[teacherName].dates.add(date);
+    selectedTimeSlots.forEach(slot => teachersData[teacherName].availableTimeSlots.add(slot));
 
-    document.getElementById('teacherName').value = '';
+    // Clear inputs after update
+    teacherNameInput.value = '';
+    document.getElementById('subjectDropdown').selectedIndex = 0;
+    document.getElementById('classDropdown').selectedIndex = 0;
+    document.getElementById('datePicker').value = '';
+    document.getElementById('availableTimeSlots').selectedIndex = -1;
+
+    renderTeacherProfiles();
   }
 
-  function renderScheduleRequests() {
-    const ul = document.getElementById('scheduleList');
-    ul.innerHTML = '';
-    scheduleRequests.forEach(req => {
-      const li = document.createElement('li');
-      li.textContent = `${req.teacher} - ${req.subject} - ${req.class} - ${req.date} - ${req.timeSlot}`;
-      ul.appendChild(li);
+  // Render clickable teacher profiles
+  function renderTeacherProfiles() {
+    const container = document.getElementById('teacherProfiles');
+    container.innerHTML = '<h2>Teacher Profiles</h2>';
+
+    Object.entries(teachersData).forEach(([teacher, data]) => {
+      const profileDiv = document.createElement('div');
+      profileDiv.className = 'teacher-profile';
+      profileDiv.innerHTML = `<b>${teacher}</b><button style="float:right;" onclick="toggleDetails('${teacher}')">Show/Hide Details</button>`;
+
+      const detailsDiv = document.createElement('div');
+      detailsDiv.className = 'teacher-details';
+      detailsDiv.id = `details-${teacher}`;
+      detailsDiv.style.display = 'none';
+      detailsDiv.innerHTML = `
+        <p><b>Subjects:</b> ${Array.from(data.subjects).join(', ')}</p>
+        <p><b>Classes:</b> ${Array.from(data.classes).join(', ')}</p>
+        <p><b>Dates:</b> ${Array.from(data.dates).join(', ')}</p>
+        <p><b>Available Time Slots:</b> ${Array.from(data.availableTimeSlots).join(', ')}</p>
+      `;
+
+      profileDiv.appendChild(detailsDiv);
+      container.appendChild(profileDiv);
     });
   }
 
+  // Toggle details visibility
+  function toggleDetails(teacherName) {
+    const details = document.getElementById(`details-${teacherName}`);
+    if(details.style.display === 'none') {
+      details.style.display = 'block';
+    } else {
+      details.style.display = 'none';
+    }
+  }
+
+  // Generate timetable: assign subjects/classes/dates/time slots to teachers without conflicts
   function generateTimetable() {
     const output = document.getElementById('timetableOutput');
-    output.textContent = '';
+    output.textContent = ''; 
 
-    if (scheduleRequests.length === 0) {
-      output.textContent = 'No schedule requests to assign.';
+    const teacherNames = Object.keys(teachersData);
+    if (teacherNames.length === 0) {
+      output.textContent = 'No teacher profiles available. Please add teachers first.';
       return;
     }
 
+    // Flatten schedule requests for CSP
+    const scheduleRequests = [];
+    teacherNames.forEach(teacher => {
+      const profile = teachersData[teacher];
+      // Generate all combinations of subjects, classes, dates and available time slots
+      profile.subjects.forEach(subject => {
+        profile.classes.forEach(cls => {
+          profile.dates.forEach(date => {
+            profile.availableTimeSlots.forEach(timeSlot => {
+              scheduleRequests.push({teacher, subject, class: cls, date, timeSlot});
+            });
+          });
+        });
+      });
+    });
+
+    // Using backtracking to assign one non-conflicting time slot per teacher per subject/class/date
+    // We'll try to assign one timeslot to each unique (teacher, subject, class, date) combination from their available slots
+    
+    // First, group by (teacher, subject, class, date) keys to unique requests
+    const uniqueRequests = [];
+    const seenKeys = new Set();
+    for (const req of scheduleRequests) {
+      const key = `${req.teacher}|${req.subject}|${req.class}|${req.date}`;
+      if (!seenKeys.has(key)) {
+        uniqueRequests.push(req);
+        seenKeys.add(key);
+      }
+    }
+
+    // We'll assign time slots from availableTimeSlots of each teacher ensuring no conflict
     const assignment = {};
 
     function isValid(teacher, cls, date, timeSlot) {
       if (assignment[teacher]) {
-        for (let slot of assignment[teacher]) {
-          if (slot.date === date && slot.timeSlot === timeSlot) return false;
+        for (const slot of assignment[teacher]) {
+          if (slot.date === date && slot.timeSlot === timeSlot) return false; // teacher busy
         }
       }
-      for (let t in assignment) {
+      for (const t in assignment) {
         if (t !== teacher) {
-          for (let slot of assignment[t]) {
-            if (slot.class === cls && slot.date === date && slot.timeSlot === timeSlot) return false;
+          for (const slot of assignment[t]) {
+            if (slot.class === cls && slot.date === date && slot.timeSlot === timeSlot) return false; // class slot clash
           }
         }
       }
@@ -298,48 +308,50 @@
     }
 
     function backtrack(index) {
-      if (index === scheduleRequests.length) return true;
+      if (index === uniqueRequests.length) return true;
 
-      const req = scheduleRequests[index];
+      const req = uniqueRequests[index];
       if (!assignment[req.teacher]) assignment[req.teacher] = [];
 
-      if (isValid(req.teacher, req.class, req.date, req.timeSlot)) {
-        assignment[req.teacher].push({
-          class: req.class,
-          date: req.date,
-          timeSlot: req.timeSlot,
-          subject: req.subject
-        });
-
-        if (backtrack(index + 1)) return true;
-
-        assignment[req.teacher].pop();
+      // Try all teacher's available time slots for this request
+      for (const ts of Array.from(teachersData[req.teacher].availableTimeSlots)) {
+        if (isValid(req.teacher, req.class, req.date, ts)) {
+          assignment[req.teacher].push({
+            class: req.class,
+            date: req.date,
+            timeSlot: ts,
+            subject: req.subject
+          });
+          if (backtrack(index + 1)) return true;
+          assignment[req.teacher].pop();
+        }
       }
       return false;
     }
 
-    let success = backtrack(0);
+    const success = backtrack(0);
 
     if (!success) {
-      output.textContent = 'No valid timetable possible with current requests due to conflicts.';
+      output.textContent = 'No valid timetable possible with current teacher availabilities and assignments.';
       return;
     }
 
+    // Display timetable results nicely
     let result = 'Generated Timetable:\n\n';
     for (const [teacher, slots] of Object.entries(assignment)) {
+      result += `${teacher}:\n`;
       slots.forEach(slot => {
-        result += `Teacher: ${teacher}, Subject: ${slot.subject}, Class: ${slot.class}, Date: ${slot.date}, Time: ${slot.timeSlot}\n`;
+        result += `  Subject: ${slot.subject}, Class: ${slot.class}, Date: ${slot.date}, Time: ${slot.timeSlot}\n`;
       });
+      result += '\n';
     }
     output.textContent = result;
   }
 
-  document.getElementById('addTeacherAvailabilityBtn').addEventListener('click', addTeacherAvailability);
-  document.getElementById('addScheduleBtn').addEventListener('click', addSchedule);
+  // Attach event listeners
+  document.getElementById('addOrUpdateTeacherBtn').addEventListener('click', addOrUpdateTeacherProfile);
   document.getElementById('generateBtn').addEventListener('click', generateTimetable);
 
-  // Also add listeners for teacher, subject, class, date additions if you want to keep those features
-  // e.g. document.querySelector('button#addTeacherBtn').addEventListener('click', addTeacher);
 </script>
 </body>
 </html>
