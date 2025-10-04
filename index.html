@@ -1,213 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Automated Timetable Generator</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet" />
-  <style>
-    body {
-      font-family: 'Montserrat', sans-serif;
-      background: linear-gradient(135deg, #72edf2 10%, #5151e5 90%);
-      padding: 30px;
-      color: #333;
-      display: flex;
-      justify-content: center;
-      min-height: 100vh;
-      margin: 0;
-    }
-
-    .container {
-      background: #fff;
-      border-radius: 15px;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
-      padding: 40px 50px;
-      max-width: 500px;
-      width: 100%;
-      overflow-y: auto;
-    }
-
-    h1 {
-      margin-bottom: 30px;
-      font-weight: 600;
-      color: #2a2a72;
-      text-align: center;
-      letter-spacing: 1.2px;
-    }
-
-    .section {
-      margin-bottom: 30px;
-    }
-
-    h2 {
-      font-weight: 600;
-      margin-bottom: 20px;
-      color: #444;
-      border-bottom: 2px solid #72edf2;
-      padding-bottom: 6px;
-    }
-
-    input[type="text"],
-    input[type="date"] {
-      border: 2px solid #ddd;
-      border-radius: 8px;
-      padding: 12px 15px;
-      font-size: 16px;
-      width: calc(100% - 140px);
-      transition: border-color 0.3s ease;
-      outline-offset: 2px;
-    }
-
-    input[type="text"]:focus,
-    input[type="date"]:focus {
-      border-color: #5151e5;
-      box-shadow: 0 0 6px #72edf2aa;
-    }
-
-    button {
-      background: #5151e5;
-      color: white;
-      font-weight: 600;
-      border: none;
-      padding: 12px 25px;
-      margin-left: 10px;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      box-shadow: 0 8px 20px #72edf2aa;
-      transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    button:hover {
-      background-color: #3b3bda;
-      box-shadow: 0 12px 36px #72edf2dd;
-    }
-
-    ul {
-      margin-top: 15px;
-      list-style: none;
-      padding-left: 0;
-      max-height: 160px;
-      overflow-y: auto;
-      border-top: 1px solid #eee;
-    }
-
-    li {
-      background: #f5f6fa;
-      margin-bottom: 6px;
-      padding: 12px 18px;
-      font-size: 16px;
-      border-radius: 8px;
-      transition: background-color 0.2s ease;
-      box-shadow: 0 4px 8px #c4dbff33;
-    }
-
-    li:hover {
-      background: #72edf2cc;
-      color: #222;
-      font-weight: 600;
-    }
-
-    @media (max-width: 600px) {
-      .container {
-        padding: 30px 20px;
-        max-width: 100%;
-      }
-      input[type="text"],
-      input[type="date"] {
-        width: 100%;
-        margin-bottom: 12px;
-      }
-      button {
-        width: 100%;
-        margin-left: 0;
-      }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Simple JavaScript Calendar</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" />
+<style>
+  /* Basic styles similar to your previous style */
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    align-items: center;
+    margin: 0;
+  }
+  .calendar {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    width: 350px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+  h2 { text-align: center; }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin-top: 10px;
+    gap: 5px;
+    text-align: center;
+    font-weight: 600;
+  }
+  .dates {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+  }
+  .date {
+    padding: 10px;
+    text-align: center;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .date:hover { background: #e0e0e0; }
+  .today { background: #007bff; color: #fff; }
+  .selected { outline: 2px dotted #333; }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>Automated Timetable Generator</h1>
-
-    <div class="section">
-      <h2>Add Teacher</h2>
-      <input type="text" id="teacherName" placeholder="Teacher Name" />
-      <button onclick="addTeacher()">Add Teacher</button>
-      <ul id="teachersList"></ul>
-    </div>
-
-    <div class="section">
-      <h2>Add Subject</h2>
-      <input type="text" id="subjectName" placeholder="Subject Name" />
-      <button onclick="addSubject()">Add Subject</button>
-      <ul id="subjectsList"></ul>
-    </div>
-
-    <div class="section">
-      <h2>Add Class</h2>
-      <input type="text" id="className" placeholder="Class Name" />
-      <button onclick="addClass()">Add Class</button>
-      <ul id="classesList"></ul>
-    </div>
-
-    <div class="section">
-      <h2>Select Date</h2>
-      <input type="date" id="datePicker" />
-      <button onclick="selectDate()">Add Date</button>
-      <ul id="datesList"></ul>
-    </div>
+<div class="calendar">
+  <h2>My Calendar</h2>
+  <div class="header">
+    <button onclick="prevMonth()">Prev</button>
+    <div id="monthYear"></div>
+    <button onclick="nextMonth()">Next</button>
   </div>
+  <div class="days">
+    <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+  </div>
+  <div class="dates" id="datesGrid"></div>
+</div>
 
-  <script>
-    const teachers = [];
-    const subjects = [];
-    const classes = [];
-    const dates = [];
+<script>
+const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+let currentMonth = new Date().getMonth();
+let currentYear = new Date().getFullYear();
+let selectedDate = null;
 
-    function addTeacher() {
-      const name = document.getElementById('teacherName').value.trim();
-      if (name && !teachers.includes(name)) {
-        teachers.push(name);
-        renderList('teachersList', teachers);
-        document.getElementById('teacherName').value = '';
+function renderCalendar() {
+  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const datesGrid = document.getElementById('datesGrid');
+  datesGrid.innerHTML='';
+
+  document.getElementById('monthYear').innerText = months[currentMonth] + ' ' + currentYear;
+
+  // Fill preceding empty cells
+  for (let i=0; i<firstDay; i++) {
+    const emptyCell = document.createElement('div');
+    emptyCell.className='date';
+    emptyCell.innerHTML='&nbsp;';
+    datesGrid.appendChild(emptyCell);
+  }
+
+  // Fill days
+  for (let d=1; d<=daysInMonth; d++) {
+    const dayCell = document.createElement('div');
+    dayCell.className='date';
+    dayCell.innerText=d;
+    if (d===new Date().getDate() && currentMonth===new Date().getMonth() && currentYear===new Date().getFullYear()) {
+      dayCell.classList.add('today');
+    }
+
+    dayCell.addEventListener('click', () => {
+      if (selectedDate) {
+        selectedDate.classList.remove('selected');
       }
-    }
+      dayCell.classList.add('selected');
+      selectedDate=dayCell;
+      // Save selected date or trigger callback here
+      alert('Selected date: ' + currentYear + '-' + (currentMonth+1) + '-' + d);
+    });
+    datesGrid.appendChild(dayCell);
+  }
+}
 
-    function addSubject() {
-      const name = document.getElementById('subjectName').value.trim();
-      if (name && !subjects.includes(name)) {
-        subjects.push(name);
-        renderList('subjectsList', subjects);
-        document.getElementById('subjectName').value = '';
-      }
-    }
+function prevMonth() {
+  currentMonth--;
+  if (currentMonth<0) { currentMonth=11; currentYear--; }
+  renderCalendar();
+}
+function nextMonth() {
+  currentMonth++;
+  if (currentMonth>11) { currentMonth=0; currentYear++; }
+  renderCalendar();
+}
 
-    function addClass() {
-      const name = document.getElementById('className').value.trim();
-      if (name && !classes.includes(name)) {
-        classes.push(name);
-        renderList('classesList', classes);
-        document.getElementById('className').value = '';
-      }
-    }
-
-    function selectDate() {
-      const date = document.getElementById('datePicker').value;
-      if (date && !dates.includes(date)) {
-        dates.push(date);
-        renderList('datesList', dates);
-      }
-    }
-
-    function renderList(listId, items) {
-      const ul = document.getElementById(listId);
-      ul.innerHTML = '';
-      items.forEach(item => {
-        const li = document.createElement('li');
-        li.textContent = item;
-        ul.appendChild(li);
-      });
-    }
-  </script>
+renderCalendar();
+</script>
 </body>
 </html>
