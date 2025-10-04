@@ -43,6 +43,9 @@
     font-size: 16px;
     box-sizing: border-box;
   }
+  select[multiple] {
+    height: 130px;
+  }
   button {
     margin-top: 20px;
     width: 100%;
@@ -83,7 +86,6 @@
     max-height: 200px;
     overflow-y: auto;
     border: 1px solid #ddd;
-    white-space: pre-wrap;
   }
 </style>
 </head>
@@ -119,9 +121,8 @@
   <button onclick="selectDate()">Add Date</button>
   <ul id="datesList"></ul>
 
-  <label for="timeSlot">Time Slot</label>
-  <select id="timeSlot">
-    <option value="">-- Select Time Slot --</option>
+  <label for="timeSlot">Available Time Slots (select multiple)</label>
+  <select id="timeSlot" multiple>
     <option value="09:00-10:00">09:00-10:00</option>
     <option value="10:00-11:00">10:00-11:00</option>
     <option value="11:00-12:00">11:00-12:00</option>
@@ -129,11 +130,16 @@
     <option value="13:00-14:00">13:00-14:00</option>
     <option value="14:00-15:00">14:00-15:00</option>
   </select>
+  <button id="addTeacherAvailabilityBtn">Add Available Time Slots to Teacher</button>
 
   <button id="addScheduleBtn">Add Schedule Request</button>
   <button id="generateBtn">Generate Timetable</button>
 
-  <ul id="scheduleList" style="margin-top: 10px; max-height: 140px; overflow-y:auto;"></ul>
+  <h3>Teacher Availabilities:</h3>
+  <ul id="teacherAvailabilityList" style="max-height: 120px; overflow-y:auto; border: 1px solid #eee; padding-left: 20px; border-radius: 8px; background: #f9f9f9;"></ul>
+
+  <h3>Schedule Requests:</h3>
+  <ul id="scheduleList" style="max-height: 120px; overflow-y:auto; border:1px solid #eee; padding-left: 20px; border-radius: 8px; background: #f9f9f9;"></ul>
 
   <div id="timetableOutput"></div>
 </div>
@@ -145,6 +151,9 @@
   const classes = [];
   const dates = [];
   const scheduleRequests = [];
+
+  // Teacher availability: { teacherName: [timeSlots] }
+  const teacherAvailability = {};
 
   function addTeacher() {
     const input = document.getElementById('teacherName');
@@ -158,21 +167,19 @@
 
   function addSubject() {
     const input = document.getElementById('subjectDropdown');
-    const val = input.value.trim();
+    const val = input.value;
     if(val && !subjects.includes(val)) {
       subjects.push(val);
       renderList('subjectsList', subjects);
-      input.value = '';
     }
   }
 
   function addClass() {
     const input = document.getElementById('classDropdown');
-    const val = input.value.trim();
+    const val = input.value;
     if(val && !classes.includes(val)) {
       classes.push(val);
       renderList('classesList', classes);
-      input.value = '';
     }
   }
 
@@ -182,7 +189,6 @@
     if(val && !dates.includes(val)) {
       dates.push(val);
       renderList('datesList', dates);
-      input.value = '';
     }
   }
 
@@ -196,7 +202,46 @@
     }
   }
 
-  // Add schedule request with all required properties
+  // Add available time slots for teacher
+  function addTeacherAvailability() {
+    const teacher = document.getElementById('teacherName').value.trim();
+    const timeSlotSelect = document.getElementById('timeSlot');
+    const selectedSlots = Array.from(timeSlotSelect.selectedOptions).map(opt => opt.value);
+
+    if (!teacher) {
+      alert('Please enter teacher name');
+      return;
+    }
+    if (selectedSlots.length === 0) {
+      alert('Please select at least one time slot');
+      return;
+    }
+
+    if (!teacherAvailability[teacher]) {
+      teacherAvailability[teacher] = [];
+    }
+    selectedSlots.forEach(slot => {
+      if (!teacherAvailability[teacher].includes(slot)) {
+        teacherAvailability[teacher].push(slot);
+      }
+    });
+
+    renderTeacherAvailability();
+    timeSlotSelect.selectedIndex = -1; // clear selection
+  }
+
+  // Render teacher availability list
+  function renderTeacherAvailability() {
+    const ul = document.getElementById('teacherAvailabilityList');
+    ul.innerHTML = '';
+    for (const [teacher, slots] of Object.entries(teacherAvailability)) {
+      const li = document.createElement('li');
+      li.textContent = `${teacher}: ${slots.join(', ')}`;
+      ul.appendChild(li);
+    }
+  }
+
+  // Add schedule request with teacher + subject + class + date + timeslot
   function addSchedule() {
     const teacher = document.getElementById('teacherName').value.trim();
     const subject = document.getElementById('subjectDropdown').value;
@@ -209,14 +254,19 @@
       return;
     }
 
+    // Validate that the time slot is available for the teacher
+    if (!teacherAvailability[teacher] || !teacherAvailability[teacher].includes(timeSlot)) {
+      alert(`${teacher} is not available at ${timeSlot}. Please add available time slots for the teacher first.`);
+      return;
+    }
+
     scheduleRequests.push({ teacher, subject, class: cls, date, timeSlot });
     renderScheduleRequests();
 
-    // Clear teacher input to enter new schedule request
     document.getElementById('teacherName').value = '';
   }
 
-  // Render the list of added schedule requests
+  // Render schedule requests list
   function renderScheduleRequests() {
     const ul = document.getElementById('scheduleList');
     ul.innerHTML = '';
@@ -227,7 +277,7 @@
     });
   }
 
-  // CSP solver with backtracking to assign schedules avoiding conflicts
+  // CSP solver for conflict-free assignment
   function generateTimetable() {
     const output = document.getElementById('timetableOutput');
     output.textContent = '';
@@ -239,22 +289,21 @@
 
     const assignment = {};
 
-    // Check if assigning a teacher to this class/date/timeSlot is valid
     function isValid(teacher, cls, date, timeSlot) {
-      // Check teacher's own schedule for conflicts
+      // Check teacher conflicts
       if (assignment[teacher]) {
         for (let slot of assignment[teacher]) {
           if (slot.date === date && slot.timeSlot === timeSlot) {
-            return false; // Teacher busy at this slot
+            return false;
           }
         }
       }
-      // Check class is free of other teachers at this date/timeSlot
+      // Check class conflicts with other teachers
       for (let t in assignment) {
         if (t !== teacher) {
           for (let slot of assignment[t]) {
             if (slot.class === cls && slot.date === date && slot.timeSlot === timeSlot) {
-              return false; // Class occupied by another teacher
+              return false;
             }
           }
         }
@@ -262,11 +311,9 @@
       return true;
     }
 
-    // Backtracking function to assign scheduleRequests[index] onwards
     function backtrack(index) {
-      if (index === scheduleRequests.length) {
-        return true; // All assigned
-      }
+      if (index === scheduleRequests.length) return true;
+
       const req = scheduleRequests[index];
       if (!assignment[req.teacher]) assignment[req.teacher] = [];
 
@@ -280,7 +327,6 @@
 
         if (backtrack(index + 1)) return true;
 
-        // Backtrack
         assignment[req.teacher].pop();
       }
       return false;
@@ -293,7 +339,6 @@
       return;
     }
 
-    // Output results
     let result = 'Generated Timetable:\n\n';
     for (const [teacher, slots] of Object.entries(assignment)) {
       slots.forEach(slot => {
@@ -303,7 +348,8 @@
     output.textContent = result;
   }
 
-  // Event listeners for buttons
+  // Event listeners
+  document.getElementById('addTeacherAvailabilityBtn').addEventListener('click', addTeacherAvailability);
   document.getElementById('addScheduleBtn').addEventListener('click', addSchedule);
   document.getElementById('generateBtn').addEventListener('click', generateTimetable);
 
