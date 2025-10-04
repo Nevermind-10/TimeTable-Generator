@@ -1,59 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Simple JavaScript Calendar</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" />
-<style>
-  /* Basic styles similar to your previous style */
-  body {
-    font-family: 'Montserrat', sans-serif;
-    background: #f0f0f0;
-    display: flex;
-    justify-content: center;
-    min-height: 100vh;
-    align-items: center;
-    margin: 0;
-  }
-  .calendar {
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    width: 350px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  }
-  h2 { text-align: center; }
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .days {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    margin-top: 10px;
-    gap: 5px;
-    text-align: center;
-    font-weight: 600;
-  }
-  .dates {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
-  }
-  .date {
-    padding: 10px;
-    text-align: center;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  .date:hover { background: #e0e0e0; }
-  .today { background: #007bff; color: #fff; }
-  .selected { outline: 2px dotted #333; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Automated Timetable Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #f0f0f0;
+      padding: 20px;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+    .container, .calendar {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .container {
+      width: 320px;
+    }
+    .calendar {
+      width: 350px;
+    }
+    h2, h3 {
+      margin-top: 0;
+      font-weight: 600;
+      text-align: center;
+    }
+    input[type="text"], input[type="date"], button {
+      font-size: 14px;
+      padding: 8px;
+      margin: 6px 0;
+      width: 100%;
+      border-radius: 6px;
+      border: 1.5px solid #ddd;
+      outline-offset: 2px;
+      box-sizing: border-box;
+    }
+    button {
+      cursor: pointer;
+      background: #5151e5;
+      color: white;
+      border: none;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background: #3b3bda;
+    }
+    ul {
+      list-style: none;
+      padding-left: 0;
+      max-height: 140px;
+      overflow-y: auto;
+      border: 1px solid #eee;
+      border-radius: 6px;
+    }
+    li {
+      padding: 6px 10px;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .days, .dates {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      margin-top: 10px;
+      gap: 5px;
+      text-align: center;
+      font-weight: 600;
+    }
+    .date {
+      padding: 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .date:hover { background: #e0e0e0; }
+    .today { background: #007bff; color: #fff; }
+    .selected { outline: 2px dotted #333; }
+    #timetableOutput {
+      margin-top: 20px;
+      font-size: 14px;
+      white-space: pre-wrap;
+      background: #f9f9f9;
+      padding: 10px;
+      border-radius: 6px;
+      min-height: 100px;
+      border: 1px solid #ccc;
+    }
+  </style>
 </head>
 <body>
+
+<div class="container">
+  <h2>Input Data</h2>
+
+  <label>Teacher Name:</label>
+  <input type="text" id="teacherName" placeholder="Enter teacher name" />
+  <button onclick="addTeacher()">Add Teacher</button>
+  <ul id="teachersList"></ul>
+
+  <label>Subject Name:</label>
+  <input type="text" id="subjectName" placeholder="Enter subject name" />
+  <button onclick="addSubject()">Add Subject</button>
+  <ul id="subjectsList"></ul>
+
+  <label>Class Name:</label>
+  <input type="text" id="className" placeholder="Enter class name" />
+  <button onclick="addClass()">Add Class</button>
+  <ul id="classesList"></ul>
+
+  <label>Select Date:</label>
+  <input type="date" id="datePicker" />
+  <button onclick="selectDate()">Add Date</button>
+  <ul id="datesList"></ul>
+
+  <button id="generateBtn">Generate Timetable</button>
+  
+  <div id="timetableOutput"></div>
+</div>
+
 <div class="calendar">
   <h2>My Calendar</h2>
   <div class="header">
@@ -65,75 +140,134 @@
     <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
   </div>
   <div class="dates" id="datesGrid"></div>
-  <button id="generateBtn">Generate Timetable</button>
-  <div id="timetableOutput"></div>
-
 </div>
 
 <script>
-const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-let currentMonth = new Date().getMonth();
-let currentYear = new Date().getFullYear();
-let selectedDate = null;
+  // Calendar code (unchanged)
+  const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  let currentMonth = new Date().getMonth();
+  let currentYear = new Date().getFullYear();
+  let selectedDate = null;
 
-function renderCalendar() {
-  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-  const datesGrid = document.getElementById('datesGrid');
-  datesGrid.innerHTML='';
+  function renderCalendar() {
+    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+    const datesGrid = document.getElementById('datesGrid');
+    datesGrid.innerHTML='';
 
-  document.getElementById('monthYear').innerText = months[currentMonth] + ' ' + currentYear;
+    document.getElementById('monthYear').innerText = months[currentMonth] + ' ' + currentYear;
 
-  // Fill preceding empty cells
-  for (let i=0; i<firstDay; i++) {
-    const emptyCell = document.createElement('div');
-    emptyCell.className='date';
-    emptyCell.innerHTML='&nbsp;';
-    datesGrid.appendChild(emptyCell);
-  }
-
-  // Fill days
-  for (let d=1; d<=daysInMonth; d++) {
-    const dayCell = document.createElement('div');
-    dayCell.className='date';
-    dayCell.innerText=d;
-    if (d===new Date().getDate() && currentMonth===new Date().getMonth() && currentYear===new Date().getFullYear()) {
-      dayCell.classList.add('today');
+    // Fill preceding empty cells
+    for (let i=0; i<firstDay; i++) {
+      const emptyCell = document.createElement('div');
+      emptyCell.className='date';
+      emptyCell.innerHTML='&nbsp;';
+      datesGrid.appendChild(emptyCell);
     }
 
-    dayCell.addEventListener('click', () => {
-      if (selectedDate) {
-        selectedDate.classList.remove('selected');
+    // Fill days
+    for (let d=1; d<=daysInMonth; d++) {
+      const dayCell = document.createElement('div');
+      dayCell.className='date';
+      dayCell.innerText=d;
+      if (d===new Date().getDate() && currentMonth===new Date().getMonth() && currentYear===new Date().getFullYear()) {
+        dayCell.classList.add('today');
       }
-      dayCell.classList.add('selected');
-      selectedDate=dayCell;
-      // Save selected date or trigger callback here
-      alert('Selected date: ' + currentYear + '-' + (currentMonth+1) + '-' + d);
-    });
-    datesGrid.appendChild(dayCell);
+
+      dayCell.addEventListener('click', () => {
+        if (selectedDate) {
+          selectedDate.classList.remove('selected');
+        }
+        dayCell.classList.add('selected');
+        selectedDate=dayCell;
+        alert('Selected date: ' + currentYear + '-' + (currentMonth+1) + '-' + d);
+      });
+      datesGrid.appendChild(dayCell);
+    }
   }
-}
+  function prevMonth() {
+    currentMonth--;
+    if (currentMonth<0) { currentMonth=11; currentYear--; }
+    renderCalendar();
+  }
+  function nextMonth() {
+    currentMonth++;
+    if (currentMonth>11) { currentMonth=0; currentYear++; }
+    renderCalendar();
+  }
 
-function prevMonth() {
-  currentMonth--;
-  if (currentMonth<0) { currentMonth=11; currentYear--; }
   renderCalendar();
-}
-function nextMonth() {
-  currentMonth++;
-  if (currentMonth>11) { currentMonth=0; currentYear++; }
-  renderCalendar();
-}
 
-renderCalendar();
-document.getElementById('generateBtn').addEventListener('click', () => {
-  const output = document.getElementById('timetableOutput');
-  output.innerHTML = '<h3>Generated Timetable:</h3>';
-  
-  // For now, put a placeholder message or integrate your scheduling logic here
-  output.innerHTML += '<p>Timetable generation logic will appear here.</p>';
-});
+  // Data storage arrays
+  let teacherList = [];
+  let subjectList = [];
+  let classList = [];
+  let dateList = [];
 
+  // Add item functions
+  function addTeacher() {
+    const input = document.getElementById('teacherName');
+    const val = input.value.trim();
+    if (val && !teacherList.includes(val)) {
+      teacherList.push(val);
+      input.value = '';
+      renderList('teachersList', teacherList);
+    }
+  }
+  function addSubject() {
+    const input = document.getElementById('subjectName');
+    const val = input.value.trim();
+    if (val && !subjectList.includes(val)) {
+      subjectList.push(val);
+      input.value = '';
+      renderList('subjectsList', subjectList);
+    }
+  }
+  function addClass() {
+    const input = document.getElementById('className');
+    const val = input.value.trim();
+    if (val && !classList.includes(val)) {
+      classList.push(val);
+      input.value = '';
+      renderList('classesList', classList);
+    }
+  }
+  function selectDate() {
+    const input = document.getElementById('datePicker');
+    const val = input.value;
+    if (val && !dateList.includes(val)) {
+      dateList.push(val);
+      input.value = '';
+      renderList('datesList', dateList);
+    }
+  }
+  // Render lists in UI
+  function renderList(elementId, list) {
+    const ul = document.getElementById(elementId);
+    ul.innerHTML = '';
+    list.forEach(item => {
+      const li = document.createElement('li');
+      li.textContent = item;
+      ul.appendChild(li);
+    });
+  }
+
+  // Dummy timetable generation example
+  document.getElementById('generateBtn').addEventListener('click', () => {
+    const output = document.getElementById('timetableOutput');
+    output.innerHTML = '<h3>Generated Timetable</h3><pre>';
+
+    // Example output for demonstration
+    teacherList.forEach((teacher, i) => {
+      const subject = subjectList[i % subjectList.length] || 'No Subject';
+      const cls = classList[i % classList.length] || 'No Class';
+      const date = dateList[i % dateList.length] || 'No Date';
+      output.innerHTML += `${teacher} teaches ${subject} to ${cls} on ${date}\n`;
+    });
+
+    output.innerHTML += '</pre>';
+  });
 </script>
+
 </body>
 </html>
