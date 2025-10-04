@@ -126,6 +126,14 @@ function nextMonth() {
 }
 
 renderCalendar();
+document.getElementById('generateBtn').addEventListener('click', () => {
+  const output = document.getElementById('timetableOutput');
+  output.innerHTML = '<h3>Generated Timetable:</h3>';
+  
+  // For now, put a placeholder message or integrate your scheduling logic here
+  output.innerHTML += '<p>Timetable generation logic will appear here.</p>';
+});
+
 </script>
 </body>
 </html>
