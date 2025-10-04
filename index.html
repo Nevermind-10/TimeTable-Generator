@@ -145,14 +145,12 @@
 </div>
 
 <script>
-  // Storage arrays
   const teachers = [];
   const subjects = [];
   const classes = [];
   const dates = [];
   const scheduleRequests = [];
 
-  // Teacher availability: { teacherName: [timeSlots] }
   const teacherAvailability = {};
 
   function addTeacher() {
@@ -202,7 +200,6 @@
     }
   }
 
-  // Add available time slots for teacher
   function addTeacherAvailability() {
     const teacher = document.getElementById('teacherName').value.trim();
     const timeSlotSelect = document.getElementById('timeSlot');
@@ -230,7 +227,6 @@
     timeSlotSelect.selectedIndex = -1; // clear selection
   }
 
-  // Render teacher availability list
   function renderTeacherAvailability() {
     const ul = document.getElementById('teacherAvailabilityList');
     ul.innerHTML = '';
@@ -241,7 +237,6 @@
     }
   }
 
-  // Add schedule request with teacher + subject + class + date + timeslot
   function addSchedule() {
     const teacher = document.getElementById('teacherName').value.trim();
     const subject = document.getElementById('subjectDropdown').value;
@@ -254,7 +249,6 @@
       return;
     }
 
-    // Validate that the time slot is available for the teacher
     if (!teacherAvailability[teacher] || !teacherAvailability[teacher].includes(timeSlot)) {
       alert(`${teacher} is not available at ${timeSlot}. Please add available time slots for the teacher first.`);
       return;
@@ -266,7 +260,6 @@
     document.getElementById('teacherName').value = '';
   }
 
-  // Render schedule requests list
   function renderScheduleRequests() {
     const ul = document.getElementById('scheduleList');
     ul.innerHTML = '';
@@ -277,7 +270,6 @@
     });
   }
 
-  // CSP solver for conflict-free assignment
   function generateTimetable() {
     const output = document.getElementById('timetableOutput');
     output.textContent = '';
@@ -290,21 +282,15 @@
     const assignment = {};
 
     function isValid(teacher, cls, date, timeSlot) {
-      // Check teacher conflicts
       if (assignment[teacher]) {
         for (let slot of assignment[teacher]) {
-          if (slot.date === date && slot.timeSlot === timeSlot) {
-            return false;
-          }
+          if (slot.date === date && slot.timeSlot === timeSlot) return false;
         }
       }
-      // Check class conflicts with other teachers
       for (let t in assignment) {
         if (t !== teacher) {
           for (let slot of assignment[t]) {
-            if (slot.class === cls && slot.date === date && slot.timeSlot === timeSlot) {
-              return false;
-            }
+            if (slot.class === cls && slot.date === date && slot.timeSlot === timeSlot) return false;
           }
         }
       }
@@ -348,11 +334,12 @@
     output.textContent = result;
   }
 
-  // Event listeners
   document.getElementById('addTeacherAvailabilityBtn').addEventListener('click', addTeacherAvailability);
   document.getElementById('addScheduleBtn').addEventListener('click', addSchedule);
   document.getElementById('generateBtn').addEventListener('click', generateTimetable);
 
+  // Also add listeners for teacher, subject, class, date additions if you want to keep those features
+  // e.g. document.querySelector('button#addTeacherBtn').addEventListener('click', addTeacher);
 </script>
 </body>
 </html>
