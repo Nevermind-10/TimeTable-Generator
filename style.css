@@ -1,112 +1,209 @@
-body {
-    font-family: 'Montserrat', sans-serif;
-    background: linear-gradient(135deg, #72edf2 10%, #5151e5 90%);
-    padding: 30px;
-    color: #333;
-    display: flex;
-    justify-content: center;
-    min-height: 100vh;
-    margin: 0;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Automated Timetable Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #72edf2 10%, #5151e5 90%);
+      padding: 30px;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
 
-.container {
-    background: #fff;
-    border-radius: 15px;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
-    padding: 40px 50px;
-    max-width: 500px;
-    width: 100%;
-    overflow-y: auto;
-}
-
-h1 {
-    margin-bottom: 30px;
-    font-weight: 600;
-    color: #2a2a72;
-    text-align: center;
-    letter-spacing: 1.2px;
-}
-
-.section {
-    margin-bottom: 30px;
-}
-
-h2 {
-    font-weight: 600;
-    margin-bottom: 20px;
-    color: #444;
-    border-bottom: 2px solid #72edf2;
-    padding-bottom: 6px;
-}
-
-input[type="text"], input[type="date"], select {
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    padding: 12px 15px;
-    font-size: 16px;
-    width: 100%;  /* full width for clean alignment */
-    transition: border-color 0.3s ease;
-    outline-offset: 2px;
-    margin-top: 6px;
-}
-
-input[type="text"]:focus, input[type="date"]:focus {
-    border-color: #5151e5;
-    box-shadow: 0 0 6px #72edf2aa;
-}
-
-button {
-    background: #5151e5;
-    color: white;
-    font-weight: 600;
-    border: none;
-    padding: 12px 25px;
-    margin-left: 10px;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-    box-shadow: 0 8px 20px #72edf2aa;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-}
-button:hover {
-    background-color: #3b3bda;
-    box-shadow: 0 12px 36px #72edf2dd;
-}
-
-ul {
-    margin-top: 15px;
-    list-style: none;
-    padding-left: 0;
-    max-height: 160px;
-    overflow-y: auto;
-    border-top: 1px solid #eee;
-}
-li {
-    background: #f5f6fa;
-    margin-bottom: 6px;
-    padding: 12px 18px;
-    font-size: 16px;
-    border-radius: 8px;
-    transition: background-color 0.2s ease;
-    box-shadow: 0 4px 8px #c4dbff33;
-}
-li:hover {
-    background: #72edf2cc;
-    color: #222;
-    font-weight: 600;
-}
-
-@media (max-width: 600px) {
     .container {
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
+      padding: 40px 50px;
+      max-width: 500px;
+      width: 100%;
+      overflow-y: auto;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+      font-weight: 600;
+      color: #2a2a72;
+      text-align: center;
+      letter-spacing: 1.2px;
+    }
+
+    .section {
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #444;
+      border-bottom: 2px solid #72edf2;
+      padding-bottom: 6px;
+    }
+
+    input[type="text"], input[type="date"], select {
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      padding: 12px 15px;
+      font-size: 16px;
+      width: 100%;  
+      transition: border-color 0.3s ease;
+      outline-offset: 2px;
+      margin-top: 6px;
+    }
+
+    input[type="text"]:focus, input[type="date"]:focus, select:focus {
+      border-color: #5151e5;
+      box-shadow: 0 0 6px #72edf2aa;
+    }
+
+    button {
+      background: #5151e5;
+      color: white;
+      font-weight: 600;
+      border: none;
+      padding: 12px 25px;
+      margin-top: 10px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px #72edf2aa;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    button:hover {
+      background-color: #3b3bda;
+      box-shadow: 0 12px 36px #72edf2dd;
+    }
+
+    ul {
+      margin-top: 15px;
+      list-style: none;
+      padding-left: 0;
+      max-height: 160px;
+      overflow-y: auto;
+      border-top: 1px solid #eee;
+    }
+    li {
+      background: #f5f6fa;
+      margin-bottom: 6px;
+      padding: 12px 18px;
+      font-size: 16px;
+      border-radius: 8px;
+      transition: background-color 0.2s ease;
+      box-shadow: 0 4px 8px #c4dbff33;
+    }
+    li:hover {
+      background: #72edf2cc;
+      color: #222;
+      font-weight: 600;
+    }
+
+    @media (max-width: 600px) {
+      .container {
         padding: 30px 20px;
         max-width: 100%;
-    }
-    input[type="text"], input[type="date"] {
+      }
+      input[type="text"], input[type="date"] {
         width: 100%;
         margin-bottom: 12px;
-    }
-    button {
+      }
+      button {
         width: 100%;
-        margin-left: 0;
+      }
     }
-}
+
+    /* Extra form styling */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 18px;
+    }
+    .form-group label {
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: #333;
+    }
+    .form-group input,
+    .form-group select {
+      width: 100%;
+    }
+
+    /* Optional: style teacher profiles */
+    .teacher-profile {
+      background: #f9f9ff;
+      border: 1px solid #ddd;
+      padding: 14px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+    .teacher-details {
+      margin-top: 8px;
+      font-size: 14px;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="teacherContainer">
+    <h1>Automated Timetable Generator</h1>
+
+    <div class="form-group">
+      <label for="teacherNameInput">Teacher Name</label>
+      <input type="text" id="teacherNameInput" placeholder="Enter teacher full name" />
+    </div>
+
+    <div class="form-group">
+      <label for="subjectDropdown">Subject</label>
+      <select id="subjectDropdown">
+        <option value="">-- Select Subject --</option>
+        <option value="Linear Algebra">Linear Algebra</option>
+        <option value="Fluid Mechanics">Fluid Mechanics</option>
+        <option value="Programming in C">Programming in C</option>
+        <option value="Signal Processing">Signal Processing</option>
+        <option value="Life skills">Life skills</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="classDropdown">Class</label>
+      <select id="classDropdown">
+        <option value="">-- Select Class --</option>
+        <option value="Computer Science Engineering">Computer Science Engineering</option>
+        <option value="Mechanical Engineering">Mechanical Engineering</option>
+        <option value="Electrical and Electronics Engineering">Electrical and Electronics Engineering</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="datePicker">Date</label>
+      <input type="date" id="datePicker" />
+    </div>
+
+    <div class="form-group">
+      <label for="availableTimeSlots">Available Time Slots (select multiple)</label>
+      <select id="availableTimeSlots" multiple>
+        <option value="09:00-10:00">09:00-10:00</option>
+        <option value="10:00-11:00">10:00-11:00</option>
+        <option value="11:00-12:00">11:00-12:00</option>
+        <option value="12:00-13:00">12:00-13:00</option>
+        <option value="13:00-14:00">13:00-14:00</option>
+        <option value="14:00-15:00">14:00-15:00</option>
+      </select>
+    </div>
+
+    <button id="addOrUpdateTeacherBtn">Add/Update Teacher Profile</button>
+
+    <div id="teacherProfiles"></div>
+
+    <button id="generateBtn">Generate Timetable</button>
+
+    <div id="timetableOutput"></div>
+  </div>
+</body>
+</html>
