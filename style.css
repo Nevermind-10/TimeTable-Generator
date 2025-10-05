@@ -209,3 +209,47 @@ button:hover {
     grid-template-columns: 1fr;
   }
 }
+
+/* === TIMETABLE TABLE STYLING === */
+.timetable-container {
+  margin-top: 25px;
+}
+
+.teacher-section {
+  margin-bottom: 30px;
+}
+
+.teacher-section h3 {
+  color: #2b2b88;
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  text-align: left;
+  border-bottom: 2px solid #72edf2;
+  padding-bottom: 5px;
+}
+
+.timetable-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+
+.timetable-table th, .timetable-table td {
+  border: 1px solid #ddd;
+  padding: 10px 12px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.timetable-table th {
+  background: #5151e5;
+  color: #fff;
+  font-weight: 600;
+}
+
+.timetable-table tr:nth-child(even) {
+  background-color: #f6f8ff;
+}
