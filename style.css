@@ -14,7 +14,7 @@ body {
   background: #fff;
   border-radius: 15px;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
-  padding: 36px 45px;
+  padding: 35px 45px;
   max-width: 540px;
   width: 100%;
   overflow-y: auto;
@@ -26,15 +26,14 @@ h1 {
   color: #2b2b88;
   margin-bottom: 25px;
   font-weight: 700;
-  letter-spacing: 0.5px;
 }
 
 h2 {
   font-size: 1.2rem;
   color: #4b4b9b;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   border-bottom: 1px solid #72edf2;
-  padding-bottom: 5px;
+  padding-bottom: 4px;
 }
 
 /* === FORM GRID === */
@@ -42,6 +41,7 @@ h2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px 16px;
+  margin-bottom: 20px;
 }
 
 .form-grid .full-width {
@@ -51,7 +51,7 @@ h2 {
 label {
   font-weight: 500;
   color: #333;
-  margin-bottom: 4px;
+  margin-bottom: 5px;
   display: block;
 }
 
@@ -62,7 +62,6 @@ input[type="text"], input[type="date"], select {
   font-size: 15px;
   width: 100%;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  outline-offset: 2px;
   background: #fff;
 }
 
@@ -74,7 +73,8 @@ input[type="text"]:focus, input[type="date"]:focus, select:focus {
 select[multiple] {
   height: 120px;
   background: #fafaff;
-  padding: 8px;
+  overflow-y: auto;
+  border-radius: 8px;
 }
 
 /* === BUTTONS === */
@@ -100,25 +100,19 @@ button:hover {
   margin-top: 18px;
 }
 
-/* === TEACHER PROFILES === */
+/* === TEACHER PROFILE === */
 .teacher-profile {
   background: #f9f9ff;
   border: 1px solid #ddd;
   border-radius: 10px;
+  padding: 12px 14px;
   margin-bottom: 12px;
-  padding: 0;
 }
 
 .profile-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 14px;
-}
-
-.profile-header strong {
-  font-size: 15px;
-  color: #333;
 }
 
 .showhide-btn {
@@ -126,29 +120,24 @@ button:hover {
   color: white;
   border: none;
   border-radius: 8px;
-  padding: 6px 12px;
   font-size: 13px;
-  font-weight: 600;
+  padding: 6px 12px;
   cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.showhide-btn:hover {
-  transform: translateY(-1px);
+  box-shadow: none;
+  font-weight: 600;
 }
 
 .teacher-details {
-  border-top: 1px solid #ddd;
-  padding: 10px 14px;
+  margin-top: 8px;
   font-size: 14px;
   color: #444;
 }
 
-/* === LANDING + STUDENT PAGE === */
 .hidden {
   display: none !important;
 }
 
+/* === LANDING PAGE === */
 #landingScreen {
   position: absolute;
   inset: 0;
@@ -156,7 +145,6 @@ button:hover {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  box-sizing: border-box;
 }
 
 .landing-inner {
@@ -193,7 +181,6 @@ button:hover {
   transform: translateY(-6px);
 }
 
-/* === STUDENT PAGE === */
 #studentPage {
   position: absolute;
   inset: 0;
@@ -215,7 +202,7 @@ button:hover {
 
 @media (max-width: 600px) {
   .container {
-    padding: 28px 20px;
+    padding: 30px 20px;
     max-width: 100%;
   }
   .form-grid {
