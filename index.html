@@ -145,15 +145,22 @@
     container.innerHTML = '<h2>Teacher Profiles</h2>';
 
     Object.entries(teachersData).forEach(([teacher, data]) => {
-      const profile = document.createElement('div');
-      profile.className = 'teacher-profile';
+      const card = document.createElement('div');
+      card.className = 'teacher-profile';
 
-      const profileHeader = document.createElement('div');
-      profileHeader.className = 'profile-header';
-      profileHeader.innerHTML = `
-        <strong>${teacher}</strong>
-        <button class="showhide-btn" onclick="toggleDetails('${teacher}')">Show/Hide</button>
-      `;
+      const header = document.createElement('div');
+      header.className = 'profile-header';
+
+      const name = document.createElement('strong');
+      name.textContent = teacher;
+
+      const btn = document.createElement('button');
+      btn.textContent = 'Show/Hide';
+      btn.className = 'showhide-btn';
+      btn.onclick = () => toggleDetails(teacher);
+
+      header.appendChild(name);
+      header.appendChild(btn);
 
       const details = document.createElement('div');
       details.id = `details-${teacher}`;
@@ -166,9 +173,9 @@
         <p><b>Available Time Slots:</b> ${Array.from(data.availableTimeSlots).join(', ')}</p>
       `;
 
-      profile.appendChild(profileHeader);
-      profile.appendChild(details);
-      container.appendChild(profile);
+      card.appendChild(header);
+      card.appendChild(details);
+      container.appendChild(card);
     });
   }
 
