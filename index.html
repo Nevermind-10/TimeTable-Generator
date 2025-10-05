@@ -5,194 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Automated Timetable Generator</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet" />
-<style>
-  /* === Your original styles (kept intact) === */
-  body {
-    font-family: 'Montserrat', sans-serif;
-    background: linear-gradient(135deg, #72edf2 10%, #5151e5 90%);
-    padding: 30px;
-    color: #333;
-    display: flex;
-    justify-content: center;
-    min-height: 100vh;
-    margin: 0;
-  }
-
-  .container {
-    background: #fff;
-    border-radius: 15px;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
-    padding: 40px 50px;
-    max-width: 500px;
-    width: 100%;
-    overflow-y: auto;
-  }
-
-  h1 {
-    margin-bottom: 30px;
-    font-weight: 600;
-    color: #2a2a72;
-    text-align: center;
-    letter-spacing: 1.2px;
-  }
-
-  .section {
-    margin-bottom: 30px;
-  }
-
-  h2 {
-    font-weight: 600;
-    margin-bottom: 20px;
-    color: #444;
-    border-bottom: 2px solid #72edf2;
-    padding-bottom: 6px;
-  }
-
-  input[type="text"], input[type="date"] {
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    padding: 12px 15px;
-    font-size: 16px;
-    width: calc(100% - 140px);
-    transition: border-color 0.3s ease;
-    outline-offset: 2px;
-  }
-  input[type="text"]:focus, input[type="date"]:focus {
-    border-color: #5151e5;
-    box-shadow: 0 0 6px #72edf2aa;
-  }
-
-  button {
-    background: #5151e5;
-    color: white;
-    font-weight: 600;
-    border: none;
-    padding: 12px 25px;
-    margin-left: 10px;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-    box-shadow: 0 8px 20px #72edf2aa;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  }
-  button:hover {
-    background-color: #3b3bda;
-    box-shadow: 0 12px 36px #72edf2dd;
-  }
-
-  ul {
-    margin-top: 15px;
-    list-style: none;
-    padding-left: 0;
-    max-height: 160px;
-    overflow-y: auto;
-    border-top: 1px solid #eee;
-  }
-  li {
-    background: #f5f6fa;
-    margin-bottom: 6px;
-    padding: 12px 18px;
-    font-size: 16px;
-    border-radius: 8px;
-    transition: background-color 0.2s ease;
-    box-shadow: 0 4px 8px #c4dbff33;
-  }
-  li:hover {
-    background: #72edf2cc;
-    color: #222;
-    font-weight: 600;
-  }
-
-  @media (max-width: 600px) {
-    .container {
-      padding: 30px 20px;
-      max-width: 100%;
-    }
-    input[type="text"], input[type="date"] {
-      width: 100%;
-      margin-bottom: 12px;
-    }
-    button {
-      width: 100%;
-      margin-left: 0;
-    }
-  }
-
-  /* === NEW: small utility and landing / student styles (non-invasive) === */
-  .hidden { display: none !important; }
-
-  /* Landing screen */
-  #landingScreen {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    box-sizing: border-box;
-  }
-
-  .landing-inner {
-    text-align: center;
-    backdrop-filter: blur(6px);
-    padding: 40px;
-    border-radius: 18px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
-    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
-  }
-
-  .role-btn {
-    display: inline-block;
-    padding: 18px 46px;
-    margin: 14px;
-    border-radius: 999px;
-    border: none;
-    font-size: 20px;
-    font-weight: 700;
-    color: white;
-    cursor: pointer;
-    transition: transform 0.18s ease, box-shadow 0.18s ease;
-    letter-spacing: 0.6px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-  }
-
-  /* Teacher button (primary) */
-  .role-btn.teacher {
-    background: linear-gradient(90deg, #5151e5, #7b5cff);
-  }
-
-  /* Student button (secondary) */
-  .role-btn.student {
-    background: linear-gradient(90deg, #72edf2, #4ec0ff);
-  }
-
-  .role-btn:hover { transform: translateY(-6px); }
-
-  /* Student page */
-  #studentPage {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    box-sizing: border-box;
-  }
-  #studentPage .message {
-    font-size: 36px;
-    font-weight: 800;
-    color: rgba(10,10,30,0.9);
-    background: rgba(255,255,255,0.85);
-    padding: 30px 40px;
-    border-radius: 12px;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
-    text-align: center;
-  }
-</style>
+<link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- === Landing screen (new) === -->
+  <!-- === Landing screen === -->
   <div id="landingScreen">
     <div class="landing-inner">
       <h1 style="margin:0 0 18px 0; color: #fff; text-shadow: 0 3px 10px rgba(0,0,0,0.25)">Choose your role</h1>
@@ -201,60 +18,69 @@
     </div>
   </div>
 
-  <!-- === Student 'Under Construction' screen (new) === -->
+  <!-- === Student 'Under Construction' screen === -->
   <div id="studentPage" class="hidden">
     <div class="message">Under Construction</div>
   </div>
 
-  <!-- === Your original teacher interface (kept unchanged) === -->
+  <!-- === Teacher Interface === -->
   <div class="container hidden" id="teacherContainer">
     <h1>Automated Timetable Generator</h1>
 
-    <label for="teacherNameInput">Teacher Name</label>
-    <input type="text" id="teacherNameInput" placeholder="Enter teacher full name" />
+    <div class="form-grid">
+      <div>
+        <label for="teacherNameInput">Teacher Name</label>
+        <input type="text" id="teacherNameInput" placeholder="Enter teacher full name" />
+      </div>
 
-    <label for="subjectDropdown">Subject</label>
-    <select id="subjectDropdown">
-      <option value="">-- Select Subject --</option>
-      <option value="Linear Algebra">Linear Algebra</option>
-      <option value="Fluid Mechanics">Fluid Mechanics</option>
-      <option value="Programming in C">Programming in C</option>
-      <option value="Signal Processing">Signal Processing</option>
-      <option value="Life skills">Life skills</option>
-    </select>
+      <div>
+        <label for="subjectDropdown">Subject</label>
+        <select id="subjectDropdown">
+          <option value="">-- Select Subject --</option>
+          <option value="Linear Algebra">Linear Algebra</option>
+          <option value="Fluid Mechanics">Fluid Mechanics</option>
+          <option value="Programming in C">Programming in C</option>
+          <option value="Signal Processing">Signal Processing</option>
+          <option value="Life skills">Life skills</option>
+        </select>
+      </div>
 
-    <label for="classDropdown">Class</label>
-    <select id="classDropdown">
-      <option value="">-- Select Class --</option>
-      <option value="Computer Science Engineering">Computer Science Engineering</option>
-      <option value="Mechanical Engineering">Mechanical Engineering</option>
-      <option value="Electrical and Electronics Engineering">Electrical and Electronics Engineering</option>
-    </select>
+      <div>
+        <label for="classDropdown">Class</label>
+        <select id="classDropdown">
+          <option value="">-- Select Class --</option>
+          <option value="Computer Science Engineering">Computer Science Engineering</option>
+          <option value="Mechanical Engineering">Mechanical Engineering</option>
+          <option value="Electrical and Electronics Engineering">Electrical and Electronics Engineering</option>
+        </select>
+      </div>
 
-    <label for="datePicker">Date</label>
-    <input type="date" id="datePicker" />
+      <div>
+        <label for="datePicker">Date</label>
+        <input type="date" id="datePicker" />
+      </div>
 
-    <label for="availableTimeSlots">Available Time Slots (select multiple)</label>
-    <select id="availableTimeSlots" multiple>
-      <option value="09:00-10:00">09:00-10:00</option>
-      <option value="10:00-11:00">10:00-11:00</option>
-      <option value="11:00-12:00">11:00-12:00</option>
-      <option value="12:00-13:00">12:00-13:00</option>
-      <option value="13:00-14:00">13:00-14:00</option>
-      <option value="14:00-15:00">14:00-15:00</option>
-    </select>
+      <div class="full-width">
+        <label for="availableTimeSlots">Available Time Slots (select multiple)</label>
+        <select id="availableTimeSlots" multiple>
+          <option value="09:00-10:00">09:00-10:00</option>
+          <option value="10:00-11:00">10:00-11:00</option>
+          <option value="11:00-12:00">11:00-12:00</option>
+          <option value="12:00-13:00">12:00-13:00</option>
+          <option value="13:00-14:00">13:00-14:00</option>
+          <option value="14:00-15:00">14:00-15:00</option>
+        </select>
+      </div>
+    </div>
 
     <button id="addOrUpdateTeacherBtn">Add/Update Teacher Profile</button>
-
     <div id="teacherProfiles"></div>
-
     <button id="generateBtn">Generate Timetable</button>
-
     <div id="timetableOutput"></div>
   </div>
 
 <script>
-  // ====== Landing / navigation logic (minimal, non-invasive) ======
+  // ===== Role switching =====
   const landing = document.getElementById('landingScreen');
   const teacherContainer = document.getElementById('teacherContainer');
   const studentPage = document.getElementById('studentPage');
@@ -265,7 +91,6 @@
     landing.classList.add('hidden');
     studentPage.classList.add('hidden');
     teacherContainer.classList.remove('hidden');
-    // scroll teacher container into view if needed
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
@@ -276,15 +101,7 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
-  // If you want to return to landing without refresh, you can open console and call:
-  // document.getElementById('landingScreen').classList.remove('hidden');
-  // and hide other screens. (I avoided adding UI-back button to leave teacher UI unchanged.)
-
-  /* ====== Original teacher UI script (kept exactly from your previous code) ======
-     (I didn't change any IDs, data structures, or algorithm logic.)
-  */
-
-  // Teacher profiles keyed by full name
+  // ===== Timetable logic =====
   const teachersData = {};
 
   function addOrUpdateTeacherProfile() {
@@ -295,24 +112,8 @@
     const date = document.getElementById('datePicker').value;
     const selectedTimeSlots = Array.from(document.getElementById('availableTimeSlots').selectedOptions).map(opt => opt.value);
 
-    if (!teacherName) {
-      alert('Please enter a valid teacher full name.');
-      return;
-    }
-    if (!subject) {
-      alert('Please select a subject.');
-      return;
-    }
-    if (!cls) {
-      alert('Please select a class.');
-      return;
-    }
-    if (!date) {
-      alert('Please select a date.');
-      return;
-    }
-    if (selectedTimeSlots.length === 0) {
-      alert('Please select at least one available time slot.');
+    if (!teacherName || !subject || !cls || !date || selectedTimeSlots.length === 0) {
+      alert('Please fill out all fields and select time slots.');
       return;
     }
 
@@ -325,7 +126,6 @@
       };
     }
 
-    // Add the data to Sets to avoid duplicates
     teachersData[teacherName].subjects.add(subject);
     teachersData[teacherName].classes.add(cls);
     teachersData[teacherName].dates.add(date);
@@ -359,7 +159,6 @@
         <p><b>Dates:</b> ${Array.from(data.dates).join(', ')}</p>
         <p><b>Available Time Slots:</b> ${Array.from(data.availableTimeSlots).join(', ')}</p>
       `;
-
       div.appendChild(details);
       container.appendChild(div);
     });
@@ -380,7 +179,6 @@
       return;
     }
 
-    // Construct array of unique teaching requests per teacher, subject, class, date
     const requests = [];
     for (const teacher of teacherNames) {
       const profile = teachersData[teacher];
@@ -393,17 +191,14 @@
       }
     }
 
-    // Assign time slots from availableTimeSlots per teacher for requests using backtracking to avoid conflicts
     const assignment = {};
 
     function isValid(teacher, cls, date, timeSlot) {
-      // Teacher does not have overlapping class at this date/time
       if (assignment[teacher]) {
         for (const slot of assignment[teacher]) {
           if (slot.date === date && slot.timeSlot === timeSlot) return false;
         }
       }
-      // No other teacher is assigned same class/date/timeSlot
       for (const t in assignment) {
         if (t !== teacher) {
           for (const slot of assignment[t]) {
@@ -416,7 +211,6 @@
 
     function backtrack(i) {
       if (i === requests.length) return true;
-
       const req = requests[i];
       if (!assignment[req.teacher]) assignment[req.teacher] = [];
 
@@ -428,9 +222,7 @@
             timeSlot: ts,
             subject: req.subject
           });
-
           if (backtrack(i+1)) return true;
-
           assignment[req.teacher].pop();
         }
       }
@@ -442,7 +234,6 @@
       return;
     }
 
-    // Format timetable output
     let timetableResult = 'Generated Timetable:\n\n';
     for (const [teacher, slots] of Object.entries(assignment)) {
       timetableResult += `${teacher}:\n`;
