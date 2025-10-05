@@ -145,9 +145,15 @@
     container.innerHTML = '<h2>Teacher Profiles</h2>';
 
     Object.entries(teachersData).forEach(([teacher, data]) => {
-      const div = document.createElement('div');
-      div.className = 'teacher-profile';
-      div.innerHTML = `<strong>${teacher}</strong> <button style="float:right;" onclick="toggleDetails('${teacher}')">Show/Hide</button>`;
+      const profile = document.createElement('div');
+      profile.className = 'teacher-profile';
+
+      const profileHeader = document.createElement('div');
+      profileHeader.className = 'profile-header';
+      profileHeader.innerHTML = `
+        <strong>${teacher}</strong>
+        <button class="showhide-btn" onclick="toggleDetails('${teacher}')">Show/Hide</button>
+      `;
 
       const details = document.createElement('div');
       details.id = `details-${teacher}`;
@@ -159,8 +165,10 @@
         <p><b>Dates:</b> ${Array.from(data.dates).join(', ')}</p>
         <p><b>Available Time Slots:</b> ${Array.from(data.availableTimeSlots).join(', ')}</p>
       `;
-      div.appendChild(details);
-      container.appendChild(div);
+
+      profile.appendChild(profileHeader);
+      profile.appendChild(details);
+      container.appendChild(profile);
     });
   }
 
