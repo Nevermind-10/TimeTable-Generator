@@ -186,7 +186,7 @@
 
   function generateTimetable() {
     const output = document.getElementById('timetableOutput');
-    output.textContent = '';
+    output.innerHTML = '';
 
     const teacherNames = Object.keys(teachersData);
     if (teacherNames.length === 0) {
@@ -200,7 +200,7 @@
       for (const subject of profile.subjects) {
         for (const cls of profile.classes) {
           for (const date of profile.dates) {
-            requests.push({teacher, subject, class: cls, date});
+            requests.push({ teacher, subject, class: cls, date });
           }
         }
       }
@@ -237,7 +237,7 @@
             timeSlot: ts,
             subject: req.subject
           });
-          if (backtrack(i+1)) return true;
+          if (backtrack(i + 1)) return true;
           assignment[req.teacher].pop();
         }
       }
@@ -249,20 +249,47 @@
       return;
     }
 
-    let timetableResult = 'Generated Timetable:\n\n';
+    // === Generate nice table format ===
+    const timetableContainer = document.createElement('div');
+    timetableContainer.className = 'timetable-container';
+
     for (const [teacher, slots] of Object.entries(assignment)) {
-      timetableResult += `${teacher}:\n`;
-      for (const slot of slots) {
-        timetableResult += `  Subject: ${slot.subject}, Class: ${slot.class}, Date: ${slot.date}, Time: ${slot.timeSlot}\n`;
-      }
-      timetableResult += '\n';
+      const section = document.createElement('div');
+      section.className = 'teacher-section';
+      const title = document.createElement('h3');
+      title.textContent = teacher;
+      section.appendChild(title);
+
+      const table = document.createElement('table');
+      table.className = 'timetable-table';
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>Subject</th>
+            <th>Class</th>
+            <th>Date</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${slots.map(slot => `
+            <tr>
+              <td>${slot.subject}</td>
+              <td>${slot.class}</td>
+              <td>${slot.date}</td>
+              <td>${slot.timeSlot}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      `;
+
+      section.appendChild(table);
+      timetableContainer.appendChild(section);
     }
 
-    output.textContent = timetableResult;
+    output.appendChild(timetableContainer);
   }
 
   document.getElementById('addOrUpdateTeacherBtn').addEventListener('click', addOrUpdateTeacherProfile);
   document.getElementById('generateBtn').addEventListener('click', generateTimetable);
 </script>
-</body>
-</html>
