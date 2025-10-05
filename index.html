@@ -2,247 +2,203 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Automated Time Table Generator</title>
+  <title>Role Selection</title>
   <style>
     body {
+      margin: 0;
       font-family: Arial, sans-serif;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(270deg, #f8d7ff, #d7f3ff, #e0ffd7);
+      background-size: 600% 600%;
+      animation: gradientBG 20s ease infinite;
+      color: #333;
+    }
+
+    @keyframes gradientBG {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+
+    .container {
+      text-align: center;
+    }
+
+    .role-btn {
+      display: inline-block;
+      padding: 20px 50px;
       margin: 20px;
-      background: #f7f7f7;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      color: white;
+      font-size: 1.5em;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
-    h1, h2 { text-align: center; }
-    form {
-      background: white;
-      padding: 15px;
-      margin-bottom: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+
+    .role-btn:hover {
+      transform: translateY(-5px);
+      box-shadow: 0px 8px 20px rgba(0,0,0,0.2);
     }
-    label { display: block; margin-top: 10px; }
-    input, select {
-      margin-top: 5px;
-      padding: 5px;
+
+    .hidden {
+      display: none;
+    }
+
+    /* Teacher dashboard styles */
+    .dashboard {
       width: 100%;
-      max-width: 300px;
+      padding: 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+      text-align: left;
     }
-    .teacher-profile {
-      background: white;
-      margin: 10px 0;
-      padding: 10px;
-      border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+
+    form {
+      margin-bottom: 20px;
+      background: rgba(255,255,255,0.8);
+      padding: 20px;
+      border-radius: 10px;
     }
+
+    form label {
+      display: flex;
+      flex-direction: column;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    form input, form select {
+      margin-top: 5px;
+      padding: 6px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      width: 100%;
+      max-width: 350px;
+    }
+
+    form button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      background: #2575fc;
+      color: white;
+      font-size: 1em;
+      cursor: pointer;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 15px;
-      background: white;
+      background: rgba(255,255,255,0.9);
     }
+
     th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
+      padding: 10px;
+      border: 1px solid #ccc;
       text-align: center;
     }
+
     th {
-      background: #4CAF50;
+      background: #6a11cb;
       color: white;
     }
-    button {
-      margin-top: 10px;
-      padding: 8px 15px;
-      border: none;
-      border-radius: 5px;
-      background: #4CAF50;
-      color: white;
-      cursor: pointer;
+
+    /* Student page */
+    .under-construction {
+      font-size: 3em;
+      font-weight: bold;
+      text-align: center;
+      color: #444;
     }
-    button:hover { background: #45a049; }
   </style>
 </head>
 <body>
+  <!-- Landing Page -->
+  <div id="landing" class="container">
+    <button class="role-btn" onclick="showPage('teacher')">Teacher</button>
+    <button class="role-btn" onclick="showPage('student')">Student</button>
+  </div>
 
-  <h1>Automated Time Table Generator</h1>
+  <!-- Teacher Dashboard -->
+  <div id="teacherPage" class="hidden">
+    <div class="dashboard">
+      <h2>Teacher Dashboard</h2>
+      <form id="studentForm">
+        <label>
+          Full Name:
+          <input type="text" id="name" required>
+        </label>
+        <label>
+          Roll Number:
+          <input type="text" id="roll" required>
+        </label>
+        <label>
+          Subject:
+          <select id="subject">
+            <option>Math</option>
+            <option>Science</option>
+            <option>History</option>
+          </select>
+        </label>
+        <label>
+          Marks:
+          <input type="number" id="marks" min="0" max="100" required>
+        </label>
+        <button type="submit">Add Record</button>
+      </form>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Roll</th>
+            <th>Subject</th>
+            <th>Marks</th>
+          </tr>
+        </thead>
+        <tbody id="records"></tbody>
+      </table>
+    </div>
+  </div>
 
-  <!-- Teacher form -->
-  <form id="teacherForm">
-    <h2>Add Teacher Assignment</h2>
-    <label>Full Name: <input type="text" id="teacherName" required></label>
-
-    <label>Subject:
-      <select id="subject" required>
-        <option value="">--Select Subject--</option>
-        <option>Mathematics</option>
-        <option>Physics</option>
-        <option>Chemistry</option>
-        <option>Computer Science</option>
-        <option>English</option>
-      </select>
-    </label>
-
-    <label>Class:
-      <select id="class" required>
-        <option value="">--Select Class--</option>
-        <option>CSE</option>
-        <option>ECE</option>
-        <option>ME</option>
-        <option>CE</option>
-      </select>
-    </label>
-
-    <label>Date: <input type="date" id="date" required></label>
-
-    <label>Available Time Slots:</label>
-    <label><input type="checkbox" name="timeSlot" value="9-10"> 9-10</label>
-    <label><input type="checkbox" name="timeSlot" value="10-11"> 10-11</label>
-    <label><input type="checkbox" name="timeSlot" value="11-12"> 11-12</label>
-    <label><input type="checkbox" name="timeSlot" value="1-2"> 1-2</label>
-    <label><input type="checkbox" name="timeSlot" value="2-3"> 2-3</label>
-    <label><input type="checkbox" name="timeSlot" value="3-4"> 3-4</label>
-
-    <button type="submit">Add Assignment</button>
-  </form>
-
-  <h2>Teacher Profiles</h2>
-  <div id="teacherProfiles"></div>
-
-  <button id="generateBtn">Generate Timetable</button>
-
-  <h2>Generated Timetable</h2>
-  <div id="timetableOutput"></div>
+  <!-- Student Page -->
+  <div id="studentPage" class="hidden">
+    <div class="under-construction">Under Construction</div>
+  </div>
 
   <script>
-    const teachersData = {};  // stores teachers and their assignments
-    let requests = [];        // flat list of assignment requests
-
-    // Add teacher assignment
-    document.getElementById('teacherForm').addEventListener('submit', e => {
-      e.preventDefault();
-
-      const name = document.getElementById('teacherName').value.trim();
-      const subject = document.getElementById('subject').value;
-      const cls = document.getElementById('class').value;
-      const date = document.getElementById('date').value;
-      const timeSlots = [...document.querySelectorAll('input[name="timeSlot"]:checked')].map(cb => cb.value);
-
-      if (!name || !subject || !cls || !date || timeSlots.length === 0) {
-        alert("Please fill all fields and select at least one timeslot.");
-        return;
-      }
-
-      if (!teachersData[name]) {
-        teachersData[name] = { assignments: [] };
-      }
-
-      const assignment = { teacher: name, subject, class: cls, date, availableTimeSlots: timeSlots };
-      teachersData[name].assignments.push(assignment);
-      requests.push(assignment);
-
-      renderProfiles();
-      e.target.reset();
-    });
-
-    // Render teacher profiles
-    function renderProfiles() {
-      const container = document.getElementById('teacherProfiles');
-      container.innerHTML = "";
-      for (const [name, data] of Object.entries(teachersData)) {
-        const div = document.createElement('div');
-        div.className = "teacher-profile";
-        div.innerHTML = `<h3>${name}</h3>` +
-          data.assignments.map(a =>
-            `<p><b>Subject:</b> ${a.subject}, <b>Class:</b> ${a.class}, <b>Date:</b> ${a.date}, <b>Available:</b> ${a.availableTimeSlots.join(', ')}</p>`
-          ).join('');
-        container.appendChild(div);
-      }
-    }
-
-    // CSP solver helpers
-    function isValid(assignment, chosen, timetable) {
-      const { teacher, class: cls, date } = assignment;
-      const ts = chosen;
-
-      for (const [t, slots] of Object.entries(timetable)) {
-        for (const s of slots) {
-          if (s.date === date && s.timeSlot === ts) {
-            if (s.teacher === teacher) return false;  // teacher conflict
-            if (s.class === cls) return false;        // class conflict
-          }
-        }
-      }
-      return true;
-    }
-
-    function selectUnassigned(requests, assigned, timetable) {
-      let best = null;
-      let minOptions = Infinity;
-
-      for (const req of requests) {
-        if (assigned.has(req)) continue;
-        const options = req.availableTimeSlots.filter(ts => isValid(req, ts, timetable));
-        if (options.length < minOptions) {
-          minOptions = options.length;
-          best = req;
-        }
-      }
-      return best;
-    }
-
-    function backtrack(requests, timetable = {}, assigned = new Set()) {
-      if (assigned.size === requests.length) return timetable;
-
-      const req = selectUnassigned(requests, assigned, timetable);
-      if (!req) return null;
-
-      const options = req.availableTimeSlots.filter(ts => isValid(req, ts, timetable));
-
-      for (const ts of options) {
-        // assign
-        timetable[req.teacher] = timetable[req.teacher] || [];
-        timetable[req.teacher].push({ ...req, timeSlot: ts });
-
-        assigned.add(req);
-
-        const result = backtrack(requests, timetable, assigned);
-        if (result) return result;
-
-        // unassign
-        timetable[req.teacher].pop();
-        assigned.delete(req);
-      }
-
-      return null;
-    }
-
-    // Render timetable
-    function renderTimetable(timetable) {
-      let html = "<table><tr><th>Teacher</th><th>Subject</th><th>Class</th><th>Date</th><th>Time Slot</th></tr>";
-      for (const [teacher, slots] of Object.entries(timetable)) {
-        for (const s of slots) {
-          html += `<tr>
-            <td>${teacher}</td>
-            <td>${s.subject}</td>
-            <td>${s.class}</td>
-            <td>${s.date}</td>
-            <td>${s.timeSlot}</td>
-          </tr>`;
-        }
-      }
-      html += "</table>";
-      document.getElementById('timetableOutput').innerHTML = html;
-    }
-
-    document.getElementById('generateBtn').addEventListener('click', () => {
-      if (requests.length === 0) {
-        alert("No assignments added yet.");
-        return;
-      }
-      const timetable = backtrack(requests);
-      if (timetable) {
-        renderTimetable(timetable);
+    function showPage(role) {
+      document.getElementById('landing').classList.add('hidden');
+      if (role === 'teacher') {
+        document.getElementById('teacherPage').classList.remove('hidden');
       } else {
-        alert("No valid timetable could be generated.");
+        document.getElementById('studentPage').classList.remove('hidden');
       }
+    }
+
+    // Form submission logic for teacher dashboard
+    document.getElementById('studentForm')?.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const roll = document.getElementById('roll').value;
+      const subject = document.getElementById('subject').value;
+      const marks = document.getElementById('marks').value;
+
+      const row = `<tr>
+        <td>${name}</td>
+        <td>${roll}</td>
+        <td>${subject}</td>
+        <td>${marks}</td>
+      </tr>`;
+      document.getElementById('records').insertAdjacentHTML('beforeend', row);
+
+      this.reset();
     });
   </script>
-
 </body>
 </html>
