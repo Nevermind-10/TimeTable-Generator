@@ -249,3 +249,7 @@ button:hover {
     padding: 8px 10px;
   }
 }
+#studentBtn {
+  display: none; /* hide the button entirely */
+}
+
